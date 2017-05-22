@@ -10,7 +10,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 	clock_t clockCurrent;
 
 	double dRuntime_MP = 0.0;
-
+	double dRuntime_Block = 0.0;
 	double dDebug_ContactCutoff = -1000.0;
 
 	double dTimeIncrement_Accumulated = 0.0;
@@ -35,6 +35,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			int	iThread = omp_get_thread_num();
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// reset grid points ---------------------------------------------- reset grid points
 			#pragma omp for
 			for(unsigned int index_GP = 0; index_GP < allGridPoint.size(); index_GP++)
@@ -50,10 +51,12 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					thisGP->d3_Force_Temp = glm::dvec3(0.0, 0.0, 0.0);
 				}
 			}
+			a_Runtime[0] += omp_get_wtime() - dRuntime_Block;
 
 			// reset grid kernel points --------------------------------------- reset grid kernel points
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// find adjacent grid points for every material point ------------- find adjacent grid points
 			// and the corresponding bases values -----------------------------
 			#pragma omp for
@@ -78,6 +81,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					v_MP_AGP[index_MP][index_AGP].d3ShapeGradient = BasesFunction_Thread.d3_ShapeGradient;
 				}
 			}
+			a_Runtime[1] += omp_get_wtime() - dRuntime_Block;
 
 			// grid contact kernel -------------------------------------------- GP contact kernel
 			// grid contact kernel gradient ----------------------------------- GP contact kernel gradient
@@ -86,6 +90,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			// detect contact ------------------------------------------------- detect contacts
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// material point to grid, only mass ------------------------------ MP to GP (mass)
 			#pragma omp for
 			for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
@@ -111,8 +116,10 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
 				}
 			}
+			a_Runtime[2] += omp_get_wtime() - dRuntime_Block;
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// material point to grid, velocity and force---------------------- MP to GP (velocity and force)
 			#pragma omp for
 			for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
@@ -148,8 +155,10 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
 				}
 			}
+			a_Runtime[3] += omp_get_wtime() - dRuntime_Block;
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// update grid momentum and apply boundary conditions ------------- update GP momentum
 			// and damping ----------------------------------------------------
 			#pragma omp for
@@ -183,8 +192,10 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					}
 				}
 			}
+			a_Runtime[4] += omp_get_wtime() - dRuntime_Block;
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// displacement controlled material points ------------------------ displacement control
 			#pragma omp for
 			for(unsigned int index_MP = 0; index_MP < v_MarkedMaterialPoints_Displacement_Control.size(); index_MP++)
@@ -207,8 +218,10 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
 				}
 			}
+			a_Runtime[5] += omp_get_wtime() - dRuntime_Block;
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// grid to material ----------------------------------------------- GP to MP
 			#pragma omp for
 			for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
@@ -294,8 +307,10 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 
 				thisMP->d_BackStress_Isotropic += vonMises_Thread.dBackstress_IsotropicIncrement;
 			}
+			a_Runtime[6] += omp_get_wtime() - dRuntime_Block;
 
 			#pragma omp barrier
+			dRuntime_Block = omp_get_wtime();
 			// displacement controlled material points ------------------------ displacement control
 			#pragma omp for
 			for(unsigned int index_MP = 0; index_MP < v_MarkedMaterialPoints_Displacement_Control.size(); index_MP++)
@@ -306,6 +321,8 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					thisMP->d3_Velocity = m_TimeLine.getVelocity(dTime);
 				thisMP->d3_Position += thisMP->d3_Velocity * dTimeIncrement;
 			}
+			a_Runtime[7] += omp_get_wtime() - dRuntime_Block;
+
 		}
 
 //		d_Runtime_Total += double(double(clock()-clockCurrent_Total)/CLOCKS_PER_SEC);

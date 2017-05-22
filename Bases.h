@@ -13,6 +13,9 @@ class Bases
 		Bases() {;}
 		virtual ~Bases() {;}
 
+		double getShapeValue(void) {return(d_ShapeValue);}
+		glm::dvec3 getShapeGradient(void) {return(d3_ShapeGradient);}
+
 		double d_ShapeValue = 0.0;
 		glm::dvec3 d3_ShapeGradient = glm::dvec3(0.0, 0.0, 0.0);
 
@@ -21,25 +24,25 @@ class Bases
 			glm::dvec3 d3Distance = d3Position_MP - d3Position_GP;
 
 			glm::dvec3 d3ShapeValue = glm::dvec3(0.0, 0.0, 0.0);
-			d3ShapeValue[0] = 1.0 - fabs(d3Distance[0]) / d3Cell_Length[0];
-			d3ShapeValue[1] = 1.0 - fabs(d3Distance[1]) / d3Cell_Length[1];
-			d3ShapeValue[2] = 1.0 - fabs(d3Distance[2]) / d3Cell_Length[2];
+			d3ShapeValue.x = 1.0 - fabs(d3Distance.x) / d3Cell_Length.x;
+			d3ShapeValue.y = 1.0 - fabs(d3Distance.y) / d3Cell_Length.y;
+			d3ShapeValue.z = 1.0 - fabs(d3Distance.z) / d3Cell_Length.z;
 
-			if(d3ShapeValue[0] < 0.0 || d3ShapeValue[0] > 1.0)
-				d3ShapeValue[0] = 0.0;
+			if(d3ShapeValue.x < 0.0 || d3ShapeValue.x > 1.0)
+				d3ShapeValue.x = 0.0;
 
-			if(d3ShapeValue[1] < 0.0 || d3ShapeValue[1] > 1.0)
-				d3ShapeValue[1] = 0.0;
+			if(d3ShapeValue.y < 0.0 || d3ShapeValue.y > 1.0)
+				d3ShapeValue.y = 0.0;
 
-			if(d3ShapeValue[2] < 0.0 || d3ShapeValue[2] > 1.0)
-				d3ShapeValue[2] = 0.0;
+			if(d3ShapeValue.z < 0.0 || d3ShapeValue.z > 1.0)
+				d3ShapeValue.z = 0.0;
 
 			// results to pointers
-			this->d_ShapeValue = d3ShapeValue[0] * d3ShapeValue[1] * d3ShapeValue[2];
+			this->d_ShapeValue = d3ShapeValue.x * d3ShapeValue.y * d3ShapeValue.z;
 
-			this->d3_ShapeGradient[0] = -d3ShapeValue[1] * d3ShapeValue[2] * glm::sign(d3Distance[0]) / d3Cell_Length[0];//sina, make sure these are formulated correctly
-			this->d3_ShapeGradient[1] = -d3ShapeValue[0] * d3ShapeValue[2] * glm::sign(d3Distance[1]) / d3Cell_Length[1];
-			this->d3_ShapeGradient[2] = -d3ShapeValue[0] * d3ShapeValue[1] * glm::sign(d3Distance[2]) / d3Cell_Length[2];
+			this->d3_ShapeGradient.x = -d3ShapeValue.y * d3ShapeValue.z * glm::sign(d3Distance.x) / d3Cell_Length.x;//sina, make sure these are formulated correctly
+			this->d3_ShapeGradient.y = -d3ShapeValue.x * d3ShapeValue.z * glm::sign(d3Distance.y) / d3Cell_Length.y;
+			this->d3_ShapeGradient.z = -d3ShapeValue.x * d3ShapeValue.y * glm::sign(d3Distance.z) / d3Cell_Length.z;
 		}
 
 	protected:

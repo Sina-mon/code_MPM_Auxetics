@@ -93,7 +93,7 @@ class PhysicsEngine
 		double d_DampingCoefficient = 0.0;
 
 		double d_Runtime_Total = 0.0;
-		std::array<double, 13> a_Runtime;
+		std::array<double, 8> a_Runtime;
 
 		std::vector<GridPoint *> allGridPoint;
 		std::vector<GridPoint *> v_GridPoint_Kernel;

@@ -229,19 +229,12 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	// sina, be careful, this requires the number of adjacent grid points to be exactly 8
 	v_MP_AGP.resize(allMaterialPoint.size());
 
+
 	if(true)
 	{// timeline events -------------------------------------------------------
 		m_TimeLine.addTimePoint(0.0, glm::dvec3(0.0, 0.0, 0.0));
 		m_TimeLine.addTimePoint(1.0e-5, glm::dvec3(0.0, -10.0, 0.0));
 //		m_TimeLine.addTimePoint(2.0e-5, glm::dvec3(0.0, -2.0, 0.0));
-//		m_TimeLine.addTimePoint(3.0e-5, glm::dvec3(0.0, -4.0, 0.0));
-//		m_TimeLine.addTimePoint(4.0e-5, glm::dvec3(0.0, -8.0, 0.0));
-//		m_TimeLine.addTimePoint(5.0e-5, glm::dvec3(0.0, -16.0, 0.0));
-//		m_TimeLine.addTimePoint(6.0e-5, glm::dvec3(0.0, -32.0, 0.0));
-//		m_TimeLine.addTimePoint(7.0e-5, glm::dvec3(0.0, -64.0, 0.0));
-//		m_TimeLine.addTimePoint(8.0e-5, glm::dvec3(0.0, -128.0, 0.0));
-//		m_TimeLine.addTimePoint(9.0e-5, glm::dvec3(0.0, -256.0, 0.0));
-//		m_TimeLine.addTimePoint(10.0e-5, glm::dvec3(0.0, -512.0, 0.0));
 		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, -10.0, 0.0));
 	}
 

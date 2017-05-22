@@ -75,7 +75,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 		omp_init_lock(v_GridPoint_Lock[index]);
 	}
 
-	d_Offset = 1.0/4.0*d3_Length_Cell.x;
+	d_Offset = 1.0/2.0*d3_Length_Cell.x;
 	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.05,0.05,1.1*d_Offset);
 	glm::dvec3 d3Center_Cell = glm::dvec3(0.5,0.5,0.5)*d3_Length_Grid;
 	d3Center_Cell.y = 0.5*d3Dimensions_Cell.y + 1.5*d3_Length_Cell.y;
@@ -225,14 +225,6 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 		m_TimeLine.addTimePoint(0.0, glm::dvec3(0.0, 0.0, 0.0));
 		m_TimeLine.addTimePoint(1.0e-5, glm::dvec3(0.0, -10.0, 0.0));
 //		m_TimeLine.addTimePoint(2.0e-5, glm::dvec3(0.0, -2.0, 0.0));
-//		m_TimeLine.addTimePoint(3.0e-5, glm::dvec3(0.0, -4.0, 0.0));
-//		m_TimeLine.addTimePoint(4.0e-5, glm::dvec3(0.0, -8.0, 0.0));
-//		m_TimeLine.addTimePoint(5.0e-5, glm::dvec3(0.0, -16.0, 0.0));
-//		m_TimeLine.addTimePoint(6.0e-5, glm::dvec3(0.0, -32.0, 0.0));
-//		m_TimeLine.addTimePoint(7.0e-5, glm::dvec3(0.0, -64.0, 0.0));
-//		m_TimeLine.addTimePoint(8.0e-5, glm::dvec3(0.0, -128.0, 0.0));
-//		m_TimeLine.addTimePoint(9.0e-5, glm::dvec3(0.0, -256.0, 0.0));
-//		m_TimeLine.addTimePoint(10.0e-5, glm::dvec3(0.0, -512.0, 0.0));
 		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, -10.0, 0.0));
 	}
 
@@ -243,10 +235,9 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	}
 
 	a_Runtime.fill(0.0);
-//	d_Mass_Minimum = 1.0e-9;
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = 10.0e-4;
+	dTimeEnd = 1.0e-5;
 	d_TimeIncrement_Maximum = 5.0e-9;
 	dTimeConsole_Interval = 1.0e-6;
 
@@ -281,7 +272,6 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 
 		sDescription += "Global Damping: " + Script(d_DampingCoefficient, 3) + "\n";
 		sDescription += "Non-slip contact\n";
-//		sDescription += "Elastic-Perfectly plastic\n";
 	}
 
 	dTimeConsole_Last = 0.0;
