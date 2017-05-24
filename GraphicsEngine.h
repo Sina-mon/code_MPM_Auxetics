@@ -47,8 +47,8 @@ class GraphicsEngine
 
 		SDL_Window *p_Window = NULL;
 
-		float i_ScreenWidth = 900;
-		float i_ScreenHeight = 900;
+		float i_ScreenWidth = 600;
+		float i_ScreenHeight = 600;
 
 		glm::vec3 f3_World_Center = glm::vec3(0.0, 0.0, 0.0);
 		glm::vec3 f3_World_Dimensions = glm::vec3(0.0, 0.0, 0.0);
@@ -75,6 +75,15 @@ class GraphicsEngine
 		Mesh *gl_Particle_Mesh;
 
 		Texture	*gl_Shadow_Texture;
+
+		enum class enum_Canvas : int {
+			MAIN = 0,
+			J2,
+			COUNT
+		};
+
+		Texture	*v_Canvas_Texture[(int)enum_Canvas::COUNT];
+		Mesh	*v_Canvas_Mesh[(int)enum_Canvas::COUNT];
 
 		// canvas for every drawable item
 		Texture	*gl_Canvas_Texture;

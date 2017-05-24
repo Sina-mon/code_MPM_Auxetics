@@ -83,7 +83,7 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 	strConsole += "\tForce_y: " + Script(d3Force.y,6);
 	strConsole += "\n";
 
-	if(true)
+	if(false)
 	{// runtimes
 		double dRuntime_Total = 0.0;
 		for(int index = 0; index < a_Runtime.size(); index++)

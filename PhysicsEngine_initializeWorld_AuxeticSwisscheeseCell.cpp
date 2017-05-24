@@ -9,7 +9,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	// grid points ------------------------------------------------------------
 	{// initialize GP mediator
 		d3_Length_Grid = glm::dvec3(0.06, 0.06, 0.001);
-		i3_Cells = 1*glm::ivec3(60, 60, 1);
+		i3_Cells = 2*glm::ivec3(60, 60, 1);
 
 		d3_Length_Cell = d3_Length_Grid / glm::dvec3(i3_Cells);
 
@@ -237,8 +237,8 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	a_Runtime.fill(0.0);
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = .0e-5;
-	d_TimeIncrement_Maximum = .0e-9;
+	dTimeEnd = 1.0e-3;
+	d_TimeIncrement_Maximum = 2.0e-9;
 	dTimeConsole_Interval = 1.0e-6;
 
 	std::string sDescription = "";
