@@ -77,12 +77,12 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 
 	d_Offset = 1.0/2.0*d3_Length_Cell.x;
 	double dThickness = 2.0*d_Offset;
-	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.02,0.05,dThickness);
+	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.05,0.05,dThickness);
 	glm::dvec3 d3Center_Cell = glm::dvec3(0.5,0.5,0.5)*d3_Length_Grid;
 	d3Center_Cell.y = 0.5*d3Dimensions_Cell.y + 1.5*d3_Length_Cell.y;
-//	d3Center_Cell.z = 0.5*dThickness;
+	d3Center_Cell.z = 0.5*dThickness;
 	glm::dvec2 d2Spacing = glm::dvec2(0.014, 0.014);
-	glm::dvec2 d2Radii = 0.0*glm::dvec2(0.0075, 0.0055);
+	glm::dvec2 d2Radii = glm::dvec2(0.0075, 0.0055);
 	if(true)
 	{// cell material points -------------------------------------------------- tube MP
 		double dOffset = d_Offset;
@@ -241,7 +241,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	a_Runtime.fill(0.0);
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = 10.0e-3;
+	dTimeEnd = 1.0e-3;
 	d_TimeIncrement_Maximum = 2.0e-9;
 	dTimeConsole_Interval = 1.0e-6;
 
