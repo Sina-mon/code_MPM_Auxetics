@@ -8,8 +8,8 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	// ------------------------------------------------------------------------
 	// grid points ------------------------------------------------------------
 	{// initialize GP mediator
-		d3_Length_Grid = glm::dvec3(0.06, 0.06, 0.002);
-		i3_Cells = 1*glm::ivec3(60, 60, 2);
+		d3_Length_Grid = glm::dvec3(0.06, 0.06, 0.001);
+		i3_Cells = 2*glm::ivec3(60, 60, 1);
 
 		d3_Length_Cell = d3_Length_Grid / glm::dvec3(i3_Cells);
 

@@ -16,6 +16,15 @@ GraphicsEngine::~GraphicsEngine()
 
 	if(gl_Shadow_Texture != NULL)	delete gl_Shadow_Texture;
 
+	for(int index = 0; index < (int)enum_Canvas::COUNT; index++)
+	{
+		if(v_Canvas_Texture[index] != NULL)
+			delete v_Canvas_Texture[index];
+
+		if(v_Canvas_Mesh[index] != NULL)
+			delete v_Canvas_Mesh[index];
+	}
+
 	if(gl_Canvas_Mesh != NULL)		delete gl_Canvas_Mesh;
 	if(gl_Canvas_Texture != NULL)	delete gl_Canvas_Texture;
 
