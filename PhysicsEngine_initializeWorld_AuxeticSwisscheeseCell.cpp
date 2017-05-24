@@ -237,8 +237,8 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	a_Runtime.fill(0.0);
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = 1.0e-5;
-	d_TimeIncrement_Maximum = 5.0e-9;
+	dTimeEnd = .0e-5;
+	d_TimeIncrement_Maximum = .0e-9;
 	dTimeConsole_Interval = 1.0e-6;
 
 	std::string sDescription = "";

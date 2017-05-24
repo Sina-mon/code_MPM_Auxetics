@@ -53,6 +53,9 @@ class GraphicsEngine
 		glm::vec3 f3_World_Center = glm::vec3(0.0, 0.0, 0.0);
 		glm::vec3 f3_World_Dimensions = glm::vec3(0.0, 0.0, 0.0);
 
+		glm::vec3 f3_Camera_Position_Original = glm::vec3(0.0,0.0, -0.5);
+		glm::vec3 f3_Camera_Target_Original = glm::vec3(0.0,0.0,0.0);
+
 		GameState e_GameState = GameState::PLAY;
 
 		// shaders
