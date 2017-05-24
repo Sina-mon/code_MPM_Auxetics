@@ -8,8 +8,8 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	// ------------------------------------------------------------------------
 	// grid points ------------------------------------------------------------
 	{// initialize GP mediator
-		d3_Length_Grid = glm::dvec3(0.06, 0.06, 0.001);
-		i3_Cells = 1*glm::ivec3(60, 60, 1);
+		d3_Length_Grid = glm::dvec3(0.06, 0.06, 0.002);
+		i3_Cells = 1*glm::ivec3(60, 60, 2);
 
 		d3_Length_Cell = d3_Length_Grid / glm::dvec3(i3_Cells);
 
@@ -55,15 +55,15 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 		}
 		if(fabs(dy - d3_Length_Grid.y) < dTolerance)
 		{
-//			thisGridPoint->b3_Fixed = glm::bvec3(true, true, true);
+			thisGridPoint->b3_Fixed = glm::bvec3(true, true, true);
 		}
 		if(fabs(dz - 0.0) < dTolerance)
 		{
-//			thisGridPoint->b3_Fixed.z = true;
+			thisGridPoint->b3_Fixed.z = true;
 		}
 		if(fabs(dz - d3_Length_Grid.z) < dTolerance)
 		{
-//			thisGridPoint->b3_Fixed.z = true;
+			thisGridPoint->b3_Fixed.z = true;
 		}
 	}
 
@@ -76,11 +76,13 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	}
 
 	d_Offset = 1.0/2.0*d3_Length_Cell.x;
-	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.05,0.05,1.1*d_Offset);
+	double dThickness = 2.0*d_Offset;
+	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.02,0.05,dThickness);
 	glm::dvec3 d3Center_Cell = glm::dvec3(0.5,0.5,0.5)*d3_Length_Grid;
 	d3Center_Cell.y = 0.5*d3Dimensions_Cell.y + 1.5*d3_Length_Cell.y;
+//	d3Center_Cell.z = 0.5*dThickness;
 	glm::dvec2 d2Spacing = glm::dvec2(0.014, 0.014);
-	glm::dvec2 d2Radii = glm::dvec2(0.0075, 0.0055);
+	glm::dvec2 d2Radii = 0.0*glm::dvec2(0.0075, 0.0055);
 	if(true)
 	{// cell material points -------------------------------------------------- tube MP
 		double dOffset = d_Offset;
@@ -132,10 +134,11 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	if(true)
 	{// top platen material points -------------------------------------------- platen MP
 		double dOffset = d_Offset;
-		glm::dvec3 d3Center = glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
+		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
 		d3Center.y = d3Center_Cell.y + 0.5*d3Dimensions_Cell.y + 1.0*d3_Length_Cell.y;
-		glm::dvec3 d3Dimension = 1.1*d3Dimensions_Cell;
-		d3Dimension.y = 1.1*dOffset;
+		glm::dvec3 d3Dimension = 1.0*d3Dimensions_Cell;
+		d3Dimension.x = 1.1*d3Dimensions_Cell.x;
+		d3Dimension.y = 2.0*dOffset;
 
 		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_Cuboid(d3Center, d3Dimension, dOffset);
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
@@ -179,10 +182,11 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	if(true)
 	{// bottom platen material points ----------------------------------------- platen MP
 		double dOffset = d_Offset;
-		glm::dvec3 d3Center = glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
+		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
 		d3Center.y = d3Center_Cell.y - 0.5*d3Dimensions_Cell.y - 1.0*d3_Length_Cell.y;
-		glm::dvec3 d3Dimension = 1.1*d3Dimensions_Cell;
-		d3Dimension.y = 1.1*dOffset;
+		glm::dvec3 d3Dimension = 1.0*d3Dimensions_Cell;
+		d3Dimension.x = 1.1*d3Dimensions_Cell.x;
+		d3Dimension.y = 2.0*dOffset;
 
 		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_Cuboid(d3Center, d3Dimension, dOffset);
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
@@ -223,9 +227,9 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	if(true)
 	{// timeline events -------------------------------------------------------
 		m_TimeLine.addTimePoint(0.0, glm::dvec3(0.0, 0.0, 0.0));
-		m_TimeLine.addTimePoint(1.0e-5, glm::dvec3(0.0, -10.0, 0.0));
+		m_TimeLine.addTimePoint(1.0e-5, glm::dvec3(0.0, -1.0, 0.0));
 //		m_TimeLine.addTimePoint(2.0e-5, glm::dvec3(0.0, -2.0, 0.0));
-		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, -10.0, 0.0));
+		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, -1.0, 0.0));
 	}
 
 	glm::dvec3 d3Mass_Domain = {0.0, 0.0, 0.0};
@@ -237,8 +241,8 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 	a_Runtime.fill(0.0);
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = 1.0e-5;
-	d_TimeIncrement_Maximum = 5.0e-9;
+	dTimeEnd = 10.0e-3;
+	d_TimeIncrement_Maximum = 2.0e-9;
 	dTimeConsole_Interval = 1.0e-6;
 
 	std::string sDescription = "";
