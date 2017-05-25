@@ -27,7 +27,8 @@ void GraphicsEngine::gameLoop(void)
 
 			f_TimeSnapshot_LastSave = f_Time;
 			std::string strFileName = _STR_SNAPFILE;//"./bmp/Snapshot_";
-			strFileName += Script(i_TimeSnapshotCycle);
+			strFileName += Script((int)(f_Time*1000000),6);
+//			strFileName += Script(i_TimeSnapshotCycle);
 			strFileName += ".bmp";
 			this->saveScreenshot(0, 0, i_ScreenWidth, i_ScreenHeight, strFileName.c_str());
 			i_TimeSnapshotCycle += 1;

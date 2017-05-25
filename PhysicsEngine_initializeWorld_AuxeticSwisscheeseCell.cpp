@@ -63,7 +63,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 		}
 		if(fabs(dz - d3_Length_Grid.z) < dTolerance)
 		{
-			thisGridPoint->b3_Fixed.z = true;
+//			thisGridPoint->b3_Fixed.z = true;
 		}
 	}
 

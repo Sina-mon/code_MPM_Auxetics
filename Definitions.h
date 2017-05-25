@@ -23,7 +23,7 @@
 #define _STR_SNAPFILE	 "./bmp/Snapshot_"
 //-----------------------------------------------
 //-----------------------------------------------
-static std::string Script(int i)
+static std::string Script(int i, int iWidth = 0)
 {
 	std::stringstream strScript;
 
@@ -33,7 +33,8 @@ static std::string Script(int i)
 	strScript.setf (std::ios::right);
 
 	strScript.str("");
-//	strScript << std::setw(6) << std::setfill(' ');
+	if(iWidth != 0)
+		strScript << std::setw(iWidth) << std::setfill('0');
 	strScript << i;
 
 	return (strScript.str ());
