@@ -8,8 +8,8 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	// ------------------------------------------------------------------------
 	// grid points ------------------------------------------------------------
 	{// initialize GP mediator
-		d3_Length_Grid = glm::dvec3(0.06, 0.03, 0.001);
-		i3_Cells = 1*glm::ivec3(60, 30, 1);
+		d3_Length_Grid = glm::dvec3(0.06, 0.03, 0.002);
+		i3_Cells = 2*glm::ivec3(60, 30, 1);
 
 		d3_Length_Cell = d3_Length_Grid / glm::dvec3(i3_Cells);
 
@@ -75,24 +75,24 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		omp_init_lock(v_GridPoint_Lock[index]);
 	}
 
-	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.050346,0.02,0.0005);
+	d_Offset = 1.0/2.0*d3_Length_Cell.x;
+
+	double dThickness = 2.0*d_Offset;
+	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.050346,0.02,dThickness);
 	glm::dvec3 d3Center_Cell = glm::dvec3(0.5,0.5,0.5)*d3_Length_Grid;
-	d3Center_Cell.y = 0.5*d3Dimensions_Cell.y + 1.0*d3_Length_Cell.y;
+	d3Center_Cell.y = 0.5*d3Dimensions_Cell.y + 2.0*d3_Length_Cell.y;
+	d3Center_Cell.z = 0.5*dThickness;
 	if(true)
 	{// cell material points -------------------------------------------------- tube MP
-		double dOffset = 1.0/4.0*d3_Length_Cell.x;
-		d_Offset = dOffset;
-
 		double dGravity = 0.0;
 
 		glm::dvec3 d3Center =  d3Center_Cell;
 		glm::dvec3 d3Dimensions = d3Dimensions_Cell;
-//		d3Dimensions.z = d3_Length_Grid.z;
 //		double dDent = 0.0083910;
 		double dDent = 0.1666666666*d3Dimensions_Cell.x;
 		double dThickness = 1.0*0.0006;
 
-		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_AuxeticCell_Polygon(d3Center, d3Dimensions, dDent, dThickness, dOffset);
+		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_AuxeticCell_Polygon(d3Center, d3Dimensions, dDent, dThickness, d_Offset);
 //		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_Cuboid(d3Center, d3Dimensions, dOffset);
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// assign material point initial values
@@ -103,7 +103,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 //			thisMP->i_MaterialType = _ELASTIC;
 			thisMP->i_ID = 1;
 
-			thisMP->d_Volume_Initial = dOffset * dOffset * dOffset;
+			thisMP->d_Volume_Initial = d_Offset * d_Offset * d_Offset;
 			thisMP->d_Volume = thisMP->d_Volume_Initial;
 
 			double dMass = 2700.0 * thisMP->d_Volume;
@@ -136,15 +136,12 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 	if(true)
 	{// top platen material points -------------------------------------------- platen MP
-		double dOffset = d_Offset;
-
-		glm::dvec3 d3Center = glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
-//		d3Center.y = d3Dimensions_Cell.y + 4.0*d3_Length_Cell.y;
+		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
 		d3Center.y = d3Center_Cell.y + 0.5*d3Dimensions_Cell.y + 1.0*d3_Length_Cell.y;
 		glm::dvec3 d3Dimension = 1.0*d3Dimensions_Cell;
-		d3Dimension.y = 1.1*dOffset;
+		d3Dimension.y = 2.0*d_Offset;
 
-		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_Cuboid(d3Center, d3Dimension, dOffset);
+		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_Cuboid(d3Center, d3Dimension, d_Offset);
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// assign material point initial values
 			MaterialPoint *thisMP = thisMaterialDomain[index_MP];
@@ -152,7 +149,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 			thisMP->i_MaterialType = _ELASTIC;
 			thisMP->i_ID = 1;
 
-			thisMP->d_Volume_Initial = dOffset * dOffset * dOffset;
+			thisMP->d_Volume_Initial = d_Offset * d_Offset * d_Offset;
 			thisMP->d_Volume = thisMP->d_Volume_Initial;
 
 			double dMass = 7800.0 * thisMP->d_Volume;
@@ -185,15 +182,12 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 	if(true)
 	{// bottom platen material points ----------------------------------------- platen MP
-		double dOffset = d_Offset;
-
+		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
+		d3Center.y = d3Center_Cell.y - 0.5*d3Dimensions_Cell.y - 1.0*d3_Length_Cell.y;
 		glm::dvec3 d3Dimension = 1.0*d3Dimensions_Cell;
-//		d3Dimension.y = 2.0*d3_Length_Cell.y;//1.1*dOffset;
-		d3Dimension.y = 1.1*dOffset;
-		glm::dvec3 d3Center = glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
-		d3Center.y = 0.5*d3Dimension.y;
+		d3Dimension.y = 2.0*d_Offset;
 
-		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_Cuboid(d3Center, d3Dimension, dOffset);
+		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_Cuboid(d3Center, d3Dimension, d_Offset);
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// assign material point initial values
 			MaterialPoint *thisMP = thisMaterialDomain[index_MP];
@@ -201,7 +195,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 			thisMP->i_MaterialType = _ELASTIC;
 			thisMP->i_ID = 1;
 
-			thisMP->d_Volume_Initial = dOffset * dOffset * dOffset;
+			thisMP->d_Volume_Initial = d_Offset * d_Offset * d_Offset;
 			thisMP->d_Volume = thisMP->d_Volume_Initial;
 
 			double dMass = 7800.0 * thisMP->d_Volume;
@@ -233,9 +227,9 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	if(true)
 	{// timeline events -------------------------------------------------------
 		m_TimeLine.addTimePoint(0.0, glm::dvec3(0.0, 0.0, 0.0));
-		m_TimeLine.addTimePoint(1.0e-5, glm::dvec3(0.0, -10.0, 0.0));
+		m_TimeLine.addTimePoint(1.0e-5, glm::dvec3(0.0, -1.0, 0.0));
 //		m_TimeLine.addTimePoint(2.0e-5, glm::dvec3(0.0, -2.0, 0.0));
-		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, -10.0, 0.0));
+		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, -1.0, 0.0));
 	}
 
 	glm::dvec3 d3Mass_Domain = {0.0, 0.0, 0.0};
@@ -248,9 +242,9 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 //	d_Mass_Minimum = 1.0e-9;
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = 20.0*40.0e-5;
-	d_TimeIncrement_Maximum = 1.0*2.0e-9;
-	dTimeConsole_Interval = 1.0e-6;
+	dTimeEnd = -0.010 / (m_TimeLine.getVelocity(1.0).y);
+	d_TimeIncrement_Maximum = 2.0e-9;
+	dTimeConsole_Interval = 1.0e-5;
 
 	std::string sDescription = "";
 	{

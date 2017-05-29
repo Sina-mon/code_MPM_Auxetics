@@ -62,6 +62,14 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 		d3Force += thisGP->d3_Force_Temp;
 	}
 
+	double dKineticEnergy = 0.0;
+	for(int index = 0; index < allMaterialPoint.size(); index++)
+	{
+		MaterialPoint *thisMP = allMaterialPoint[index];
+
+		dKineticEnergy += thisMP->d3_Mass.x * glm::pow(glm::length(thisMP->d3_Velocity),2.0);
+	}
+
 	std::string strConsole = "";
 	strConsole += sDescription;
 	if(iTimeCycle == 0)
@@ -81,6 +89,7 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 		strConsole += "\tStress_y: " + Script(d3Stress.y,6);
 	}
 	strConsole += "\tForce_y: " + Script(d3Force.y,6);
+	strConsole += "\tKinetic Energy: " + Script(dKineticEnergy,6);
 	strConsole += "\n";
 
 	if(false)
