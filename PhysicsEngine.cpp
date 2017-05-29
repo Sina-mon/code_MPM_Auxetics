@@ -14,6 +14,14 @@ PhysicsEngine::~PhysicsEngine()
 	for(unsigned int index = 0; index < allGridPoint.size(); index++)
         delete allGridPoint[index];
 
+	for(int iThread = 0; iThread < _MAX_N_THREADS; iThread++)
+	{
+		for(unsigned int index = 0; index < allGridPoint_Thread[iThread].size(); index++)
+		{
+			delete allGridPoint_Thread[iThread][index];
+		}
+	}
+
 	// destroy GridPoint locks
 	for(int index = 0; index < v_GridPoint_Lock.size(); index++)
 	{
@@ -33,7 +41,7 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 	for(unsigned int index = 0; index < allGridPoint.size(); index++)
 	{// calculate debug values
 		dMass += allGridPoint[index]->d3_Mass.x;
-		dMass_Negative += allGridPoint[index]->d3_Mass_Negative.x;
+//		dMass_Negative += allGridPoint[index]->d3_Mass_Negative.x;
 	}
 
 	for(unsigned int index_MP = 0; index_MP < v_MarkedMaterialPoints_Momentum.size(); index_MP++)

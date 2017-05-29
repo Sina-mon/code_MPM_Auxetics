@@ -21,6 +21,8 @@
 #include "ConstitutiveRelation.h"
 #include "TimeLine.h"
 
+#define _MAX_N_THREADS 1
+
 // adjacent grid point struct to calculate AGP data once
 struct AGPstruct
 {
@@ -96,6 +98,7 @@ class PhysicsEngine
 		std::array<double, 8> a_Runtime;
 
 		std::vector<GridPoint *> allGridPoint;
+		std::vector<GridPoint *> allGridPoint_Thread[_MAX_N_THREADS];
 		std::vector<GridPoint *> v_GridPoint_Kernel;
 		std::vector<MaterialPoint *> allMaterialPoint;
 		std::vector<MaterialPoint *> v_MarkedMaterialPoints_Displacement_Monitor;

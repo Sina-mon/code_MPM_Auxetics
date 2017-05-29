@@ -3,8 +3,10 @@
 // ----------------------------------------------------------------------------
 int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Total)
 {
-	const int max_num_Threads = 1; // sina, only use 1 for now as you haven;t implemented atomics
-	omp_set_num_threads(max_num_Threads);
+//	const int max_num_Threads = 1; // sina, only use 1 for now as you haven;t implemented atomics
+//	omp_set_num_threads(max_num_Threads);
+
+	omp_set_num_threads(_MAX_N_THREADS);
 
 	clock_t clockCurrent_Total;
 	clock_t clockCurrent;
@@ -49,6 +51,15 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					thisGP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 					thisGP->d3_Force = glm::dvec3(0.0, 0.0, 0.0);
 					thisGP->d3_Force_Temp = glm::dvec3(0.0, 0.0, 0.0);
+
+					for(int index_Thread = 0; index_Thread < nThreads; index_Thread++)
+					{
+						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
+
+						thisGP_Thread->d3_Mass = {0.0, 0.0, 0.0};
+						thisGP_Thread->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
+						thisGP_Thread->d3_Force = glm::dvec3(0.0, 0.0, 0.0);
+					}
 				}
 			}
 			a_Runtime[0] += omp_get_wtime() - dRuntime_Block;
@@ -103,17 +114,35 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 				for(unsigned int index_AGP = 0; index_AGP < v_MP_AGP[index_MP].size(); index_AGP++)
 				{
 					unsigned int index_GP = v_MP_AGP[index_MP][index_AGP].index;
-					GridPoint *thisAGP = allGridPoint[index_GP];
+//					GridPoint *thisAGP = allGridPoint[index_GP];
+					GridPoint *thisAGP_Thread = allGridPoint_Thread[iThread][index_GP];
 
 					double dShapeValue = v_MP_AGP[index_MP][index_AGP].dShapeValue;
 					glm::dvec3 d3ShapeGradient = v_MP_AGP[index_MP][index_AGP].d3ShapeGradient;
 
-					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
+//					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
 					{
 						// mass
-						thisAGP->d3_Mass += dShapeValue * thisMP->d3_Mass;
+//						thisAGP->d3_Mass += dShapeValue * thisMP->d3_Mass;
+						thisAGP_Thread->d3_Mass += dShapeValue * thisMP->d3_Mass;
 					}
-					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
+//					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
+				}
+			}
+			#pragma omp barrier
+			// accumulate GP-layered values ----------------------------------- GP-layered
+			#pragma omp for
+			for(unsigned int index_GP = 0; index_GP < allGridPoint.size(); index_GP++)
+			{
+				GridPoint *thisGP = allGridPoint[index_GP];
+				if(thisGP->b_Active == true)
+				{
+					for(int index_Thread = 0; index_Thread < nThreads; index_Thread++)
+					{
+						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
+
+						thisGP->d3_Mass += thisGP_Thread->d3_Mass;
+					}
 				}
 			}
 			a_Runtime[2] += omp_get_wtime() - dRuntime_Block;
@@ -133,26 +162,44 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 				{
 					unsigned int index_GP = v_MP_AGP[index_MP][index_AGP].index;
 					GridPoint *thisAGP = allGridPoint[index_GP];
+					GridPoint *thisAGP_Thread = allGridPoint_Thread[iThread][index_GP];
 
 					double dShapeValue = v_MP_AGP[index_MP][index_AGP].dShapeValue;
 					glm::dvec3 d3ShapeGradient = v_MP_AGP[index_MP][index_AGP].d3ShapeGradient;
 
-					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
+//					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
 					{
 						// velocity
 						if(glm::length(thisAGP->d3_Mass) > d_Mass_Minimum)
-							thisAGP->d3_Velocity += dShapeValue * (thisMP->d3_Mass * thisMP->d3_Velocity) / thisAGP->d3_Mass;
+							thisAGP_Thread->d3_Velocity += dShapeValue * (thisMP->d3_Mass * thisMP->d3_Velocity) / thisAGP->d3_Mass;
 
 						// internal forces
 						double dVolume = thisMP->d_Volume;
-						thisAGP->d3_Force.x += -dVolume * (d3ShapeGradient.x*thisMP->d6_Stress[0] + d3ShapeGradient.y*thisMP->d6_Stress[3] + d3ShapeGradient.z*thisMP->d6_Stress[5]);
-						thisAGP->d3_Force.y += -dVolume * (d3ShapeGradient.y*thisMP->d6_Stress[1] + d3ShapeGradient.x*thisMP->d6_Stress[3] + d3ShapeGradient.z*thisMP->d6_Stress[4]);
-						thisAGP->d3_Force.z += -dVolume * (d3ShapeGradient.z*thisMP->d6_Stress[2] + d3ShapeGradient.x*thisMP->d6_Stress[5] + d3ShapeGradient.y*thisMP->d6_Stress[4]);
+						thisAGP_Thread->d3_Force.x += -dVolume * (d3ShapeGradient.x*thisMP->d6_Stress[0] + d3ShapeGradient.y*thisMP->d6_Stress[3] + d3ShapeGradient.z*thisMP->d6_Stress[5]);
+						thisAGP_Thread->d3_Force.y += -dVolume * (d3ShapeGradient.y*thisMP->d6_Stress[1] + d3ShapeGradient.x*thisMP->d6_Stress[3] + d3ShapeGradient.z*thisMP->d6_Stress[4]);
+						thisAGP_Thread->d3_Force.z += -dVolume * (d3ShapeGradient.z*thisMP->d6_Stress[2] + d3ShapeGradient.x*thisMP->d6_Stress[5] + d3ShapeGradient.y*thisMP->d6_Stress[4]);
 
 						// external forces
-						thisAGP->d3_Force += dShapeValue*thisMP->d3_Force_External;
+						thisAGP_Thread->d3_Force += dShapeValue*thisMP->d3_Force_External;
 					}
-					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
+//					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
+				}
+			}
+			#pragma omp barrier
+			// accumulate GP-layered values ----------------------------------- GP-layered
+			#pragma omp for
+			for(unsigned int index_GP = 0; index_GP < allGridPoint.size(); index_GP++)
+			{
+				GridPoint *thisGP = allGridPoint[index_GP];
+				if(thisGP->b_Active == true)
+				{
+					for(int index_Thread = 0; index_Thread < nThreads; index_Thread++)
+					{
+						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
+
+						thisGP->d3_Velocity	+= thisGP_Thread->d3_Velocity;
+						thisGP->d3_Force	+= thisGP_Thread->d3_Force;
+					}
 				}
 			}
 			a_Runtime[3] += omp_get_wtime() - dRuntime_Block;
@@ -209,13 +256,13 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					unsigned int index_GP = GP_Mediator_Thread.v_adjacentGridPoints[index_AGP];
 					GridPoint *thisAGP = allGridPoint[index_GP];
 
-					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
+//					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
 					{
 						thisAGP->d3_Velocity = thisMP->d3_Velocity;
 						//thisAGP->d3_Force_Temp += thisAGP->d3_Force;
 						thisAGP->d3_Force = glm::dvec3(0.0, 0.0, 0.0);
 					}
-					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
+//					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
 				}
 			}
 			a_Runtime[5] += omp_get_wtime() - dRuntime_Block;

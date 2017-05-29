@@ -17,6 +17,11 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	}
 	allGridPoint = GP_Factory.createGrid(d3_Length_Grid, i3_Cells);
 
+	for(int iThread = 0; iThread < _MAX_N_THREADS; iThread++)
+	{
+		allGridPoint_Thread[iThread] = GP_Factory.createGrid(d3_Length_Grid, i3_Cells);
+	}
+
 	// contact kernel grid ---------------------------------------------------- contact grid
 	{// initialize GP mediator
 		d3_Length_Grid_Kernel = d3_Length_Grid;
@@ -242,7 +247,8 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 //	d_Mass_Minimum = 1.0e-9;
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = -0.010 / (m_TimeLine.getVelocity(1.0).y);
+//	dTimeEnd = -0.010 / (m_TimeLine.getVelocity(1.0).y);
+	dTimeEnd = 1.0e-4;
 	d_TimeIncrement_Maximum = 2.0e-9;
 	dTimeConsole_Interval = 1.0e-5;
 
@@ -262,6 +268,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		sDescription += "-------------------------------------------------------------\n";
 		sDescription += "Process started on: " + strTime + "\n";
 		sDescription += "-------------------------------------------------------------\n";
+		sDescription += "Number of threads: " + Script(_MAX_N_THREADS) + "\n";
 		sDescription += "Time increment: " + Script(d_TimeIncrement_Maximum, 6) + "\n";
 		sDescription += "Material Point count: " + Script(allMaterialPoint.size()) + "\n";
 		sDescription += "Mass: " + Script(d3Mass_Domain.x,6) + "\n";

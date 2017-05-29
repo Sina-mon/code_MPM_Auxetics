@@ -231,7 +231,8 @@ void GraphicsEngine::drawGame(void)
 		{
 			GridPoint *thisGP = vGridPoint[index_GP];
 
-			if(thisGP->d_Kernel > fKernel_Maximum)	fKernel_Maximum = thisGP->d_Kernel;
+//			if(thisGP->d_Kernel > fKernel_Maximum)
+//				fKernel_Maximum = thisGP->d_Kernel;
 		}
 
 		for(int index_GP = 0; index_GP < vGridPoint.size(); index_GP++)
@@ -239,11 +240,11 @@ void GraphicsEngine::drawGame(void)
 			GridPoint *thisGP = vGridPoint[index_GP];
 
 			// particle position
-			float fSize = 0.002*thisGP->d_Kernel / fKernel_Maximum * mpm_PhysicsEngine->d3_Length_Cell.x;
+			float fSize = 0.002;//*thisGP->d_Kernel / fKernel_Maximum * mpm_PhysicsEngine->d3_Length_Cell.x;
 			// particle color
 			glm::vec4 f4objectColor = _WHITE;
 //			if(thisGP->b_Contact_Positive == true && thisGP->b_Contact_Negative == true)
-			if(thisGP->b_Contact_Negative == true)
+//			if(thisGP->b_Contact_Negative == true)
 			{
 				f4objectColor = _RED;
 				fSize *= 5.0;
@@ -302,8 +303,8 @@ void GraphicsEngine::drawGame(void)
 		{
 			GridPoint *thisGP = vGridPoint[index_GP];
 
-			if(glm::length(thisGP->d3_Kernel_Gradient) > fKernelGradient_Maximum)
-				fKernelGradient_Maximum = glm::length(thisGP->d3_Kernel_Gradient);
+//			if(glm::length(thisGP->d3_Kernel_Gradient) > fKernelGradient_Maximum)
+//				fKernelGradient_Maximum = glm::length(thisGP->d3_Kernel_Gradient);
 		}
 
 //		std::cout << "Max kernel gradient: " << fKernelGradient_Maximum << std::endl;
@@ -317,8 +318,8 @@ void GraphicsEngine::drawGame(void)
 			Transformation glTransformation(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0));
 			// color
 			glm::vec4 f4objectColor = _GREEN;
-			if(thisGP->b_Contact_Positive && thisGP->b_Contact_Negative)
-				f4objectColor = _RED;
+//			if(thisGP->b_Contact_Positive && thisGP->b_Contact_Negative)
+//				f4objectColor = _RED;
 //			else
 //				continue;
 			glUniform4fv(objectColorLocation, 1, &f4objectColor[0]);
@@ -333,15 +334,15 @@ void GraphicsEngine::drawGame(void)
 
 //			gl_Particle_Mesh->Draw();
 
-			if(glm::length(thisGP->d3_Kernel_Gradient) > 0.0)
-			{
-				glBegin(GL_LINES);
-					glm::vec3 f3Start = thisGP->d3_Position;
-					glm::vec3 f3End = glm::vec3(thisGP->d3_Position) + fSize/fKernelGradient_Maximum * glm::vec3(thisGP->d3_Kernel_Gradient);
-					glVertex3f(f3Start.x, f3Start.y, f3Start.z);
-					glVertex3f(f3End.x, f3End.y, f3End.z);
-				glEnd();
-			}
+//			if(glm::length(thisGP->d3_Kernel_Gradient) > 0.0)
+//			{
+//				glBegin(GL_LINES);
+//					glm::vec3 f3Start = thisGP->d3_Position;
+//					glm::vec3 f3End = glm::vec3(thisGP->d3_Position) + fSize/fKernelGradient_Maximum * glm::vec3(thisGP->d3_Kernel_Gradient);
+//					glVertex3f(f3Start.x, f3Start.y, f3Start.z);
+//					glVertex3f(f3End.x, f3End.y, f3End.z);
+//				glEnd();
+//			}
 		}
 
 		gl_BasicProgram.unuse();
@@ -383,8 +384,8 @@ void GraphicsEngine::drawGame(void)
 		{
 			GridPoint *thisGP = vGridPoint[index_GP];
 
-			if(glm::length(thisGP->d3_Kernel_Gradient) > fKernelGradient_Maximum)
-				fKernelGradient_Maximum = glm::length(thisGP->d3_Kernel_Gradient);
+//			if(glm::length(thisGP->d3_Kernel_Gradient) > fKernelGradient_Maximum)
+//				fKernelGradient_Maximum = glm::length(thisGP->d3_Kernel_Gradient);
 		}
 
 		for(int index_GP = 0; index_GP < vGridPoint.size(); index_GP++)
@@ -396,10 +397,10 @@ void GraphicsEngine::drawGame(void)
 			Transformation glTransformation(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0));
 			// color
 			glm::vec4 f4objectColor = _GREEN;
-			if(thisGP->b_Contact_Positive && thisGP->b_Contact_Negative)
-				f4objectColor = _RED;
-			else
-				continue;
+//			if(thisGP->b_Contact_Positive && thisGP->b_Contact_Negative)
+//				f4objectColor = _RED;
+//			else
+//				continue;
 			glUniform4fv(objectColorLocation, 1, &f4objectColor[0]);
 			// shadow
 			glm::mat4 m4LightTransformation = gl_Light->getViewProjection();
@@ -412,15 +413,15 @@ void GraphicsEngine::drawGame(void)
 
 //			gl_Particle_Mesh->Draw();
 
-			if(glm::length(thisGP->d3_Kernel_Gradient) > 0.0)
-			{
-				glBegin(GL_LINES);
-					glm::vec3 f3Start = thisGP->d3_Position;
-					glm::vec3 f3End = glm::vec3(thisGP->d3_Position) + fSize/fKernelGradient_Maximum * glm::vec3(thisGP->d3_Kernel_Gradient);
-					glVertex3f(f3Start.x, f3Start.y, f3Start.z);
-					glVertex3f(f3End.x, f3End.y, f3End.z);
-				glEnd();
-			}
+//			if(glm::length(thisGP->d3_Kernel_Gradient) > 0.0)
+//			{
+//				glBegin(GL_LINES);
+//					glm::vec3 f3Start = thisGP->d3_Position;
+//					glm::vec3 f3End = glm::vec3(thisGP->d3_Position) + fSize/fKernelGradient_Maximum * glm::vec3(thisGP->d3_Kernel_Gradient);
+//					glVertex3f(f3Start.x, f3Start.y, f3Start.z);
+//					glVertex3f(f3End.x, f3End.y, f3End.z);
+//				glEnd();
+//			}
 		}
 
 		gl_BasicProgram.unuse();
