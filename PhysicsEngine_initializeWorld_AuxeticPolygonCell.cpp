@@ -231,11 +231,24 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 	if(true)
 	{// timeline events -------------------------------------------------------
-		m_TimeLine.addTimePoint(0.0, glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(10.0e-4, glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(10.0e-4+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-//		m_TimeLine.addTimePoint(2.0e-5, glm::dvec3(0.0, -2.0, 0.0));
-		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, 0.0, 0.0));
+		m_TimeLine.addTimePoint(0.0,            glm::dvec3(0.0, -1.0, 0.0));
+
+		m_TimeLine.addTimePoint(1.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+		m_TimeLine.addTimePoint(1.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+
+		m_TimeLine.addTimePoint(2.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+		m_TimeLine.addTimePoint(2.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+
+		m_TimeLine.addTimePoint(3.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+		m_TimeLine.addTimePoint(3.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+
+		m_TimeLine.addTimePoint(4.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+		m_TimeLine.addTimePoint(4.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+
+		m_TimeLine.addTimePoint(5.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+		m_TimeLine.addTimePoint(5.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+
+		m_TimeLine.addTimePoint(1.0e6,          glm::dvec3(0.0, 0.0, 0.0));
 	}
 
 	glm::dvec3 d3Mass_Domain = {0.0, 0.0, 0.0};
@@ -246,9 +259,9 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 	a_Runtime.fill(0.0);
 //	d_Mass_Minimum = 1.0e-9;
-	d_DampingCoefficient = 0.002;
+	d_DampingCoefficient = 0.001;
 
-	dTimeEnd = 0.002;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
+	dTimeEnd = 0.01;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
 //	dTimeEnd = 1.0e-4;
 	d_TimeIncrement_Maximum = 2.0e-9;
 	dTimeConsole_Interval = 1.0e-5;
