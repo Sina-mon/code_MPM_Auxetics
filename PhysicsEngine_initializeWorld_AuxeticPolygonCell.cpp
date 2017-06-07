@@ -85,7 +85,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	double dThickness = 2.0*d_Offset;
 	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.050346,0.02,dThickness);
 	glm::dvec3 d3Center_Cell = glm::dvec3(0.5,0.5,0.5)*d3_Length_Grid;
-	d3Center_Cell.y = 0.5*d3Dimensions_Cell.y + 1.0*d3_Length_Cell.y;
+	d3Center_Cell.y = 0.5*d3Dimensions_Cell.y + 2.0*d3_Length_Cell.y;
 	d3Center_Cell.z = 0.5*dThickness;
 	if(true)
 	{// cell material points -------------------------------------------------- tube MP
@@ -142,7 +142,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	if(true)
 	{// top platen material points -------------------------------------------- platen MP
 		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
-		d3Center.y = d3Center_Cell.y + 0.5*d3Dimensions_Cell.y + 0.5*d3_Length_Cell.y;
+		d3Center.y = d3Center_Cell.y + 0.5*d3Dimensions_Cell.y + 1.5*d3_Length_Cell.y;
 		glm::dvec3 d3Dimension = 1.0*d3Dimensions_Cell;
 		d3Dimension.y = 2.0*d_Offset;
 
@@ -188,7 +188,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	if(true)
 	{// bottom platen material points ----------------------------------------- platen MP
 		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
-		d3Center.y = d3Center_Cell.y - 0.5*d3Dimensions_Cell.y - 0.5*d3_Length_Cell.y;
+		d3Center.y = d3Center_Cell.y - 0.5*d3Dimensions_Cell.y - 1.5*d3_Length_Cell.y;
 		glm::dvec3 d3Dimension = 1.0*d3Dimensions_Cell;
 		d3Dimension.y = 2.0*d_Offset;
 
@@ -229,26 +229,30 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	v_MP_AGP.resize(allMaterialPoint.size());
 
 
+	double dPlatenSpeed = -1.0;
+	double dTime_On  = 0.2e-3;
+	double dTime_Off = 0.8e-3;
+//	double dTime_On  = 0.5e-3;
+//	double dTime_Off = 0.5e-3;
+//	double dTime_On  = 1.0e-3;
+//	double dTime_Off = 0.0e-3;
 	if(true)
 	{// timeline events -------------------------------------------------------
-		m_TimeLine.addTimePoint(0.0,            glm::dvec3(0.0, -1.0, 0.0));
+	    double dTime_Line = 0.0;
 
-		m_TimeLine.addTimePoint(1.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(1.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+   		m_TimeLine.addTimePoint(0.0, glm::dvec3(0.0, dPlatenSpeed, 0.0));
+   		m_TimeLine.addTimePoint(0.1, glm::dvec3(0.0, dPlatenSpeed, 0.0));
 
-		m_TimeLine.addTimePoint(2.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-		m_TimeLine.addTimePoint(2.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-
-		m_TimeLine.addTimePoint(3.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(3.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-
-		m_TimeLine.addTimePoint(4.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-		m_TimeLine.addTimePoint(4.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-
-		m_TimeLine.addTimePoint(5.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(5.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-
-		m_TimeLine.addTimePoint(1.0e6,          glm::dvec3(0.0, 0.0, 0.0));
+//   		m_TimeLine.addTimePoint(dTime_Line, glm::dvec3(0.0, dPlatenSpeed, 0.0));
+//		for(dTime_Line = 0.0; dTime_Line < 0.02; dTime_Line += (dTime_On+dTime_Off))
+//		{
+//			m_TimeLine.addTimePoint(dTime_Line-1.0e-12,				glm::dvec3(0.0, 0.0, 0.0));
+//			m_TimeLine.addTimePoint(dTime_Line,						glm::dvec3(0.0, dPlatenSpeed, 0.0));
+//
+//			m_TimeLine.addTimePoint(dTime_Line+dTime_On-1.0e-12,	glm::dvec3(0.0, dPlatenSpeed, 0.0));
+//			m_TimeLine.addTimePoint(dTime_Line+dTime_On,        	glm::dvec3(0.0, 0.0, 0.0));
+//		}
+//		m_TimeLine.addTimePoint(1.0e6,          glm::dvec3(0.0, 0.0, 0.0));
 	}
 
 	glm::dvec3 d3Mass_Domain = {0.0, 0.0, 0.0};
@@ -261,9 +265,9 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 //	d_Mass_Minimum = 1.0e-9;
 	d_DampingCoefficient = 0.001;
 
-	dTimeEnd = 0.01;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
+	dTimeEnd = 0.02;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
 //	dTimeEnd = 1.0e-4;
-	d_TimeIncrement_Maximum = 2.0e-9;
+	d_TimeIncrement_Maximum = 1.0e-9;
 	dTimeConsole_Interval = 1.0e-5;
 
 	std::string sDescription = "";
