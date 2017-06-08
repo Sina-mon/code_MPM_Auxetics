@@ -34,7 +34,8 @@ void GraphicsEngine::drawGame(void)
 
 	if(true)
 	{// draw all objects to the canvas (not the screen)
-		gl_Canvas_Texture->bindRenderTarget();
+		v_Canvas_Texture[(int)enum_Canvas::MAIN]->bindRenderTarget();
+//		gl_Canvas_Texture->bindRenderTarget();
 		gl_BasicProgram.use();
 
 		glClearDepth(1.0);
@@ -94,7 +95,7 @@ void GraphicsEngine::drawGame(void)
 			gl_Particle_Mesh->Draw();
 		}
 		// grid points --------------------------------------------------------
-		std::vector<GridPoint *> vGridPoint = mpm_PhysicsEngine->getGridPoints();
+		std::vector<GridPoint *> vGridPoint;// = mpm_PhysicsEngine->getGridPoints();
 
 		for(int index_GP = 0; index_GP < vGridPoint.size(); index_GP++)
 		{
@@ -658,7 +659,7 @@ void GraphicsEngine::drawGame(void)
 		if(true)
 		{// top-left quadrant of screen
 			// bind texture
-			gl_Canvas_Texture->bindTextureUnit(0);
+			v_Canvas_Texture[(int)enum_Canvas::MAIN]->bindTextureUnit(0);
 			// set viewport
 			float x_Location = (float)enum_Canvas::MAIN / (int)enum_Canvas::COUNT;
 			glViewport(x_Location*i_ScreenWidth, 0.0*i_ScreenHeight, fScreenRatio*i_ScreenWidth, 1.0*i_ScreenHeight);

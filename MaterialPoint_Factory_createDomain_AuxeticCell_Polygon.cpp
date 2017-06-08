@@ -23,6 +23,32 @@ std::vector<MaterialPoint *> MaterialPoint_Factory::createDomain_AuxeticCell_Pol
 	}
 	std::vector<glm::dvec3> vVertex_Right;
 	{// right cutout, quarter
+		vVertex_Right.push_back(glm::dvec3(0.5*d3Dimension.x,0.5*dThickness,0.0));
+		vVertex_Right.push_back(glm::dvec3(0.5*d3Dimension.x,0.5*d3Dimension.y,0.0));
+		vVertex_Right.push_back(glm::dvec3(0.5*d3Dimension.x-dDent+0.5*dThickness/dAngle_Sine,0.5*d3Dimension.y,0.0));
+		vVertex_Right.push_back(glm::dvec3(dDent+0.5*dThickness/dAngle_Sine+0.5*dThickness/dAngle_Tan,0.5*dThickness,0.0));
+		vVertex_Right.push_back(glm::dvec3(0.5*d3Dimension.x,0.5*dThickness,0.0));
+	}
+	std::vector<glm::dvec3> vVertex_Left;
+	{// left cutout, quarter
+		vVertex_Left.push_back(glm::dvec3(0.0,0.0,0.0));
+		vVertex_Left.push_back(glm::dvec3(dDent-0.5*dThickness/dAngle_Sine,0.0,0.0));
+		vVertex_Left.push_back(glm::dvec3(0.5*d3Dimension.x-dDent-0.5*dThickness/dAngle_Sine-0.5*dThickness/dAngle_Tan,0.5*d3Dimension.y-0.5*dThickness,0.0));
+		vVertex_Left.push_back(glm::dvec3(0.0,0.5*d3Dimension.y-0.5*dThickness,0.0));
+		vVertex_Left.push_back(glm::dvec3(0.0,0.0,0.0));
+	}
+	/* gabriele's version
+	// create a quarter of the cell ----------------------- gabriele's version
+	std::vector<glm::dvec3> vVertex_Total;
+	{// full box, quarter
+		vVertex_Total.push_back(glm::dvec3(0.0,0.0,0.0));
+		vVertex_Total.push_back(glm::dvec3(0.5,0.0,0.0)*d3Dimension);
+		vVertex_Total.push_back(glm::dvec3(0.5,0.5,0.0)*d3Dimension);
+		vVertex_Total.push_back(glm::dvec3(0.0,0.5,0.0)*d3Dimension);
+		vVertex_Total.push_back(glm::dvec3(0.0,0.0,0.0));
+	}
+	std::vector<glm::dvec3> vVertex_Right;
+	{// right cutout, quarter
 		vVertex_Right.push_back(glm::dvec3(0.5*d3Dimension.x,0.0*dThickness,0.0));
 		vVertex_Right.push_back(glm::dvec3(0.5*d3Dimension.x,0.5*d3Dimension.y,0.0));
 		vVertex_Right.push_back(glm::dvec3(0.5*d3Dimension.x-dDent+0.5*dThickness/dAngle_Sine,0.5*d3Dimension.y,0.0));
@@ -37,7 +63,7 @@ std::vector<MaterialPoint *> MaterialPoint_Factory::createDomain_AuxeticCell_Pol
 		vVertex_Left.push_back(glm::dvec3(0.0,0.5*d3Dimension.y-2.0*dThickness,0.0));
 		vVertex_Left.push_back(glm::dvec3(0.0,0.0,0.0));
 	}
-
+	*/
 	for(double dx = 0.5*dOffset; dx <= 0.5*d3Dimension.x; dx += dOffset)
 	{
 		for(double dy = 0.5*dOffset; dy <= 0.5*d3Dimension.y; dy += dOffset)

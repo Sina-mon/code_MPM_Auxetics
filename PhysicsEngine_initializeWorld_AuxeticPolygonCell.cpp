@@ -9,7 +9,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	// grid points ------------------------------------------------------------
 	{// initialize GP mediator
 		d3_Length_Grid = glm::dvec3(0.06, 0.03, 0.002);
-		i3_Cells = 2*glm::ivec3(60, 30, 1);
+		i3_Cells = 4*glm::ivec3(60, 30, 1);
 
 		d3_Length_Cell = d3_Length_Grid / glm::dvec3(i3_Cells);
 
@@ -80,7 +80,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		omp_init_lock(v_GridPoint_Lock[index]);
 	}
 
-	d_Offset = 1.0/2.0*d3_Length_Cell.x;
+	d_Offset = 1.0/4.0*d3_Length_Cell.x;
 
 	double dThickness = 2.0*d_Offset;
 	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.050346,0.02,dThickness);
@@ -94,7 +94,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		glm::dvec3 d3Center =  d3Center_Cell;
 		glm::dvec3 d3Dimensions = d3Dimensions_Cell;
 //		double dDent = 0.0083910;
-		double dDent = 0.1666666666*d3Dimensions_Cell.x;
+		double dDent = 0.166666666*d3Dimensions_Cell.x;//(0.25-0.0*0.0333333333333)*d3Dimensions_Cell.x;
 		double dThickness = 1.0*0.0006;
 
 		std::vector<MaterialPoint *> thisMaterialDomain = MP_Factory.createDomain_AuxeticCell_Polygon(d3Center, d3Dimensions, dDent, dThickness, d_Offset);
@@ -139,7 +139,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		}
 	}
 
-	if(true)
+	if(false)
 	{// top platen material points -------------------------------------------- platen MP
 		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
 		d3Center.y = d3Center_Cell.y + 0.5*d3Dimensions_Cell.y + 0.5*d3_Length_Cell.y;
@@ -185,7 +185,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		}
 	}
 
-	if(true)
+	if(false)
 	{// bottom platen material points ----------------------------------------- platen MP
 		glm::dvec3 d3Center = d3Center_Cell;//glm::dvec3(0.5,0.5,0.5) * d3_Length_Grid;
 		d3Center.y = d3Center_Cell.y - 0.5*d3Dimensions_Cell.y - 0.5*d3_Length_Cell.y;
@@ -233,22 +233,22 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	{// timeline events -------------------------------------------------------
 		m_TimeLine.addTimePoint(0.0,            glm::dvec3(0.0, -1.0, 0.0));
 
-		m_TimeLine.addTimePoint(1.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(1.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+//		m_TimeLine.addTimePoint(1.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+//		m_TimeLine.addTimePoint(1.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+//
+//		m_TimeLine.addTimePoint(2.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+//		m_TimeLine.addTimePoint(2.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+//
+//		m_TimeLine.addTimePoint(3.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+//		m_TimeLine.addTimePoint(3.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+//
+//		m_TimeLine.addTimePoint(4.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
+//		m_TimeLine.addTimePoint(4.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+//
+//		m_TimeLine.addTimePoint(5.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
+//		m_TimeLine.addTimePoint(5.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
 
-		m_TimeLine.addTimePoint(2.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-		m_TimeLine.addTimePoint(2.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-
-		m_TimeLine.addTimePoint(3.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(3.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-
-		m_TimeLine.addTimePoint(4.0e-3-1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-		m_TimeLine.addTimePoint(4.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-
-		m_TimeLine.addTimePoint(5.0e-3,         glm::dvec3(0.0, -1.0, 0.0));
-		m_TimeLine.addTimePoint(5.0e-3+1.0e-12, glm::dvec3(0.0, 0.0, 0.0));
-
-		m_TimeLine.addTimePoint(1.0e6,          glm::dvec3(0.0, 0.0, 0.0));
+		m_TimeLine.addTimePoint(1.0e6,          glm::dvec3(0.0, -1.0, 0.0));
 	}
 
 	glm::dvec3 d3Mass_Domain = {0.0, 0.0, 0.0};
@@ -261,9 +261,9 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 //	d_Mass_Minimum = 1.0e-9;
 	d_DampingCoefficient = 0.001;
 
-	dTimeEnd = 0.01;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
+	dTimeEnd = 1.0e-5;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
 //	dTimeEnd = 1.0e-4;
-	d_TimeIncrement_Maximum = 2.0e-9;
+	d_TimeIncrement_Maximum = 1.0e-9;
 	dTimeConsole_Interval = 1.0e-5;
 
 	std::string sDescription = "";
