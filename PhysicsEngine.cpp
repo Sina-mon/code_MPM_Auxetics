@@ -8,8 +8,14 @@ PhysicsEngine::PhysicsEngine()
 PhysicsEngine::~PhysicsEngine()
 {
 	//delete all objects created by Factory classes
-	for(unsigned int index = 0; index < allMaterialPoint.size(); index++)
-        delete allMaterialPoint[index];
+//	for(unsigned int index = 0; index < allMaterialPoint.size(); index++)
+//        delete allMaterialPoint[index];
+
+	for(unsigned int index = 0; index < v_MaterialPoint_Kinetics.size(); index++)
+        delete v_MaterialPoint_Kinetics[index];
+
+	for(unsigned int index = 0; index < v_MaterialPoint_Material.size(); index++)
+        delete v_MaterialPoint_Material[index];
 
 	for(unsigned int index = 0; index < allGridPoint.size(); index++)
         delete allGridPoint[index];
@@ -54,7 +60,7 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 	glm::dvec3 d3Strain = glm::dvec3(0.0,0.0,0.0);
 	for(unsigned int index_MP = 0; index_MP < v_MarkedMaterialPoints_Stress_Monitor.size(); index_MP++)
 	{// calculate debug values
-		MaterialPoint *thisMP = v_MarkedMaterialPoints_Stress_Monitor[index_MP];
+		MaterialPoint_Material *thisMP = v_MarkedMaterialPoints_Stress_Monitor[index_MP];
 
 		d3Stress += glm::dvec3(thisMP->d6_Stress[0], thisMP->d6_Stress[1], thisMP->d6_Stress[2]);
 		d3Strain += glm::dvec3(thisMP->d6_Strain[0], thisMP->d6_Strain[1], thisMP->d6_Strain[2]);
@@ -71,11 +77,11 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 	}
 
 	double dKineticEnergy = 0.0;
-	for(int index = 0; index < allMaterialPoint.size(); index++)
+	for(int index = 0; index < v_MaterialPoint_Kinetics.size(); index++)
 	{
-		MaterialPoint *thisMP = allMaterialPoint[index];
+		MaterialPoint_Kinetics *thisMP_Kinetics = v_MaterialPoint_Kinetics[index];
 
-		dKineticEnergy += thisMP->d_Mass * glm::pow(glm::length(thisMP->d3_Velocity),2.0);
+		dKineticEnergy += thisMP_Kinetics->d_Mass * glm::pow(glm::length(thisMP_Kinetics->d3_Velocity),2.0);
 	}
 
 	std::string strConsole = "";

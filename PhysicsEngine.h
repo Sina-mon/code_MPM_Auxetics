@@ -21,7 +21,7 @@
 #include "ConstitutiveRelation.h"
 #include "TimeLine.h"
 
-#define _MAX_N_THREADS 1
+#define _MAX_N_THREADS 4
 
 // adjacent grid point struct to calculate AGP data once
 struct AGPstruct
@@ -46,13 +46,17 @@ class PhysicsEngine
 		int		runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Total);
 		int		runSimulation_Classic_SinglePass_MP_Contact(double dTimeIncrement_Total);
 		// graphics interface -------------------------------------------------
-		unsigned int	getCount_MaterialPoint(void) {return(allMaterialPoint.size());}
+		unsigned int	getCount_MaterialPoint(void) {return(v_MaterialPoint_Kinetics.size());}
+//		unsigned int	getCount_MaterialPoint(void) {return(allMaterialPoint.size());}
 		unsigned int 	getCount_GridPoint(void) {return(allGridPoint.size());}
 
-		const MaterialPoint	*getMaterialPoint(unsigned int index) {return(allMaterialPoint[index]);}
-		const GridPoint		*getGridPoint(unsigned int index) {return(allGridPoint[index]);}
+//		const MaterialPoint	*getMaterialPoint(unsigned int index) {return(allMaterialPoint[index]);}
+		const MaterialPoint_Kinetics	*getMaterialPoint_Kinetics(unsigned int index) {return(v_MaterialPoint_Kinetics[index]);}
+		const GridPoint					*getGridPoint(unsigned int index) {return(allGridPoint[index]);}
 
-		std::vector<MaterialPoint *>	getMaterialPoints(void) {return(allMaterialPoint);}
+//		std::vector<MaterialPoint *>	getMaterialPoints(void) {return(allMaterialPoint);}
+		std::vector<MaterialPoint_Kinetics *>	getMaterialPoints_Kinetics(void) {return(v_MaterialPoint_Kinetics);}
+		std::vector<MaterialPoint_Material *>	getMaterialPoints_Material(void) {return(v_MaterialPoint_Material);}
 		std::vector<GridPoint *>		getGridPoints(void) {return(allGridPoint);}
 		std::vector<GridPoint *>		getGridPoints_Kernel(void) {return(v_GridPoint_Kernel);}
 
@@ -84,12 +88,14 @@ class PhysicsEngine
 		std::vector<GridPoint *> allGridPoint;
 		std::vector<GridPoint *> allGridPoint_Thread[_MAX_N_THREADS];
 		std::vector<GridPoint *> v_GridPoint_Kernel;
-		std::vector<MaterialPoint *> allMaterialPoint;
-		std::vector<MaterialPoint *> v_MarkedMaterialPoints_Displacement_Monitor;
-		std::vector<MaterialPoint *> v_MarkedMaterialPoints_Displacement_Control;
-		std::vector<MaterialPoint *> v_MarkedMaterialPoints_Stress_Monitor;
-		std::vector<MaterialPoint *> v_MarkedMaterialPoints_Force_Monitor;
-		std::vector<MaterialPoint *> v_MarkedMaterialPoints_Momentum;
+//		std::vector<MaterialPoint *> allMaterialPoint;
+		std::vector<MaterialPoint_Kinetics *> v_MaterialPoint_Kinetics;
+		std::vector<MaterialPoint_Material *> v_MaterialPoint_Material;
+		std::vector<MaterialPoint_Kinetics *> v_MarkedMaterialPoints_Displacement_Monitor;
+		std::vector<MaterialPoint_Kinetics *> v_MarkedMaterialPoints_Displacement_Control;
+		std::vector<MaterialPoint_Material *> v_MarkedMaterialPoints_Stress_Monitor;
+		std::vector<MaterialPoint_Kinetics *> v_MarkedMaterialPoints_Force_Monitor;
+		std::vector<MaterialPoint_Kinetics *> v_MarkedMaterialPoints_Momentum;
 
 		std::vector<omp_lock_t *> v_GridPoint_Lock;
 
