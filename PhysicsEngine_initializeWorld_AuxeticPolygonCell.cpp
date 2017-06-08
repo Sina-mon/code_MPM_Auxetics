@@ -9,7 +9,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	// grid points ------------------------------------------------------------
 	{// initialize GP mediator
 		d3_Length_Grid = glm::dvec3(0.06, 0.03, 0.002);
-		i3_Cells = 2*glm::ivec3(60, 30, 1);
+		i3_Cells = 4*glm::ivec3(60, 30, 1);
 
 		d3_Length_Cell = d3_Length_Grid / glm::dvec3(i3_Cells);
 
@@ -80,7 +80,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		omp_init_lock(v_GridPoint_Lock[index]);
 	}
 
-	d_Offset = 1.0/2.0*d3_Length_Cell.x;
+	d_Offset = 1.0/4.0*d3_Length_Cell.x;
 
 	double dThickness = 2.0*d_Offset;
 	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.050346,0.02,dThickness);
@@ -275,7 +275,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	d_DampingCoefficient = 0.001;
 
 	d_TimeIncrement_Maximum = 1.0e-9;
-	d_TimeEnd = 1e5*d_TimeIncrement_Maximum;
+	d_TimeEnd = 1e4*d_TimeIncrement_Maximum;
 	d_TimeConsole_Interval = 1.0e-5;
 
 	std::string sDescription = "";
