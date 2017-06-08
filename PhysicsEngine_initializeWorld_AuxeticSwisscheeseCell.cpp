@@ -106,7 +106,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 
 			double dMass = 2700.0 * thisMP->d_Volume;
 			d_Mass_Minimum = 0.001 * dMass;
-			thisMP->d3_Mass = glm::dvec3(dMass, dMass, dMass);
+			thisMP->d_Mass = dMass;
 
 			thisMP->d_ElasticModulus = 70.0e9;
 			thisMP->d_Viscosity = 0.0;
@@ -118,7 +118,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 
 			thisMP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 //			thisMP->d3_Momentum = thisMP->d3_Mass * thisMP->d3_Velocity;
-			thisMP->d3_Force_External = thisMP->d3_Mass * glm::dvec3(0.0, 0.0, 0.0);
+			thisMP->d3_Force_External = thisMP->d_Mass * glm::dvec3(0.0, 0.0, 0.0);
 		}
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// send to MP vectors
@@ -152,7 +152,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 			thisMP->d_Volume = thisMP->d_Volume_Initial;
 
 			double dMass = 7800.0 * thisMP->d_Volume;
-			thisMP->d3_Mass = glm::dvec3(dMass, dMass, dMass);
+			thisMP->d_Mass = dMass;
 
 			thisMP->d_ElasticModulus = 210.0e9;
 			thisMP->d_Viscosity = 0.0;
@@ -161,7 +161,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 
 			thisMP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 //			thisMP->d3_Momentum = thisMP->d3_Mass * thisMP->d3_Velocity;
-			thisMP->d3_Force_External = thisMP->d3_Mass * glm::dvec3(0.0, 0.0, 0.0);
+			thisMP->d3_Force_External = thisMP->d_Mass * glm::dvec3(0.0, 0.0, 0.0);
 		}
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// send to MP vectors
@@ -200,7 +200,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 			thisMP->d_Volume = thisMP->d_Volume_Initial;
 
 			double dMass = 7800.0 * thisMP->d_Volume;
-			thisMP->d3_Mass = glm::dvec3(dMass, dMass, dMass);
+			thisMP->d_Mass = dMass;
 
 			thisMP->d_ElasticModulus = 210.0e9;
 			thisMP->d_Viscosity = 0.0;
@@ -209,7 +209,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 
 			thisMP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 //			thisMP->d3_Momentum = thisMP->d3_Mass * thisMP->d3_Velocity;
-			thisMP->d3_Force_External = thisMP->d3_Mass * glm::dvec3(0.0, 0.0, 0.0);
+			thisMP->d3_Force_External = thisMP->d_Mass * glm::dvec3(0.0, 0.0, 0.0);
 		}
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// send to MP vectors
@@ -232,18 +232,18 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 		m_TimeLine.addTimePoint(1.0e6, glm::dvec3(0.0, -1.0, 0.0));
 	}
 
-	glm::dvec3 d3Mass_Domain = {0.0, 0.0, 0.0};
+	double dMass_Domain = 0.0;
 	for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
 	{// calculate debug values
-		d3Mass_Domain += allMaterialPoint[index_MP]->d3_Mass;
+		dMass_Domain += allMaterialPoint[index_MP]->d_Mass;
 	}
 
 	a_Runtime.fill(0.0);
 	d_DampingCoefficient = 0.0;
 
-	dTimeEnd = 1.0e-3;
+	d_TimeEnd = 1.0e-3;
 	d_TimeIncrement_Maximum = 2.0e-9;
-	dTimeConsole_Interval = 1.0e-6;
+	d_TimeConsole_Interval = 1.0e-6;
 
 	std::string sDescription = "";
 	{
@@ -263,7 +263,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 		sDescription += "-------------------------------------------------------------\n";
 		sDescription += "Time increment: " + Script(d_TimeIncrement_Maximum, 6) + "\n";
 		sDescription += "Material Point count: " + Script(allMaterialPoint.size()) + "\n";
-		sDescription += "Mass: " + Script(d3Mass_Domain.x,6) + "\n";
+		sDescription += "Mass: " + Script(dMass_Domain,6) + "\n";
 		sDescription += "-------------------------------------------------------------\n";
 		sDescription += "Grid Resolution: (" + Script(i3_Cells.x) + "," + Script(i3_Cells.y) + "," + Script(i3_Cells.z) + ")\n";
 		sDescription += "Kernel Resolution: (" + Script(i3_Cells_Kernel.x) + "," + Script(i3_Cells_Kernel.y) + "," + Script(i3_Cells_Kernel.z) + ")\n";
@@ -278,7 +278,7 @@ void PhysicsEngine::initializeWorld_AuxeticSwisscheeseCell(void)
 		sDescription += "Non-slip contact\n";
 	}
 
-	dTimeConsole_Last = 0.0;
+	d_TimeConsole_Last = 0.0;
 	this->reportConsole(sDescription);
 }
 // ----------------------------------------------------------------------------

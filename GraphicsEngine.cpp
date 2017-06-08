@@ -6,9 +6,9 @@ GraphicsEngine::GraphicsEngine()
 // ----------------------------------------------------------------------------
 GraphicsEngine::~GraphicsEngine()
 {
-	if(gl_Texture_01 != NULL)	delete gl_Texture_01;
+//	if(gl_Texture_01 != NULL)	delete gl_Texture_01;
 
-	if(gl_Texture_02 != NULL)	delete gl_Texture_02;
+	if(gl_Diffuse_Texture != NULL)	delete gl_Diffuse_Texture;
 
 	if(gl_Camera != NULL)		delete gl_Camera;
 
@@ -41,10 +41,5 @@ GraphicsEngine::~GraphicsEngine()
 	if(gl_Canvas_Texture_MP_KernelGradient != NULL)	delete gl_Canvas_Texture_MP_KernelGradient;
 
 	if(gl_Particle_Mesh != NULL)	delete gl_Particle_Mesh;
-}
-// ----------------------------------------------------------------------------
-void GraphicsEngine::Run(void)
-{
-	this->gameLoop();
 }
 // ----------------------------------------------------------------------------

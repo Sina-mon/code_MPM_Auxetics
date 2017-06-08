@@ -43,7 +43,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
@@ -95,7 +95,7 @@ void GraphicsEngine::drawGame(void)
 			gl_Particle_Mesh->Draw();
 		}
 		// grid points --------------------------------------------------------
-		std::vector<GridPoint *> vGridPoint;// = mpm_PhysicsEngine->getGridPoints();
+		std::vector<GridPoint *> vGridPoint = mpm_PhysicsEngine->getGridPoints();
 
 		for(int index_GP = 0; index_GP < vGridPoint.size(); index_GP++)
 		{
@@ -134,7 +134,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
@@ -206,7 +206,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
@@ -278,7 +278,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
@@ -359,7 +359,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
@@ -438,7 +438,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
@@ -463,7 +463,7 @@ void GraphicsEngine::drawGame(void)
 		{
 			GridPoint *thisGP = vGridPoint[index_GP];
 
-			if(thisGP->d3_Mass.x > fMass_Maximum)	fMass_Maximum = thisGP->d3_Mass.x;
+			if(thisGP->d_Mass > fMass_Maximum)	fMass_Maximum = thisGP->d_Mass;
 		}
 
 		for(int index_GP = 0; index_GP < vGridPoint.size(); index_GP++)
@@ -471,7 +471,7 @@ void GraphicsEngine::drawGame(void)
 			GridPoint *thisGP = vGridPoint[index_GP];
 
 			// particle position
-			float fSize = thisGP->d3_Mass.x / fMass_Maximum * mpm_PhysicsEngine->d3_Length_Cell.x;
+			float fSize = thisGP->d_Mass / fMass_Maximum * mpm_PhysicsEngine->d3_Length_Cell.x;
 			Transformation glTransformation(thisGP->d3_Position, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.5*fSize));
 			// particle color
 			glm::vec4 f4objectColor = _GRAY;
@@ -501,7 +501,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
@@ -580,7 +580,7 @@ void GraphicsEngine::drawGame(void)
 		// diffuse
 		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
 		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
-		gl_Texture_02->bindTextureUnit(0);
+		gl_Diffuse_Texture->bindTextureUnit(0);
 		// shadow
 		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
 		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture

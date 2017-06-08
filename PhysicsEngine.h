@@ -21,7 +21,7 @@
 #include "ConstitutiveRelation.h"
 #include "TimeLine.h"
 
-#define _MAX_N_THREADS 4
+#define _MAX_N_THREADS 1
 
 // adjacent grid point struct to calculate AGP data once
 struct AGPstruct
@@ -40,43 +40,27 @@ class PhysicsEngine
 		void	initializeWorld_AuxeticSwisscheeseCell(void);
 		void	initializeWorld_AuxeticPolygonCell(void);
 		void	initializeWorld_Constitutive(void);
-		void	initializeWorld_ContactBlock(void);
-		void	initializeWorld_DropWeight(void);
 		void	initializeWorld_AluminumQuarterTube(void);
 		void	initializeWorld_AluminumTube(void);
-		void	initializeWorld_Billet(void);
-		void	initializeWorld_DiskRoll(void);
-		void	initializeWorld_SphereImpact(void);
-		void	initializeWorld_ConstitutiveRelation(void);
-		void	initializeWorld_Bar(void);
-		void	initializeWorld_Ring(void);
-		void	initializeWorld_Ring_T4(void);
-		void	initializeWorld_TubeCompression(void);
-		void	initializeWorld_Cantilever_T4(void);
-		void	initializeWorld_SteelAluminum(void);
-		void	initializeWorld_AuxeticCell(void);
-		void	initializeWorld_AuxeticMesh(void);
 
-		int		runSimulation_Classic_SinglePass(double dTimeIncrement_Total);
 		int		runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Total);
 		int		runSimulation_Classic_SinglePass_MP_Contact(double dTimeIncrement_Total);
-
 		// graphics interface -------------------------------------------------
-		unsigned int 					getCount_MaterialPoint(void) {return(allMaterialPoint.size());}
-		const MaterialPoint				*getMaterialPoint(unsigned int index) {return(allMaterialPoint[index]);}
+		unsigned int	getCount_MaterialPoint(void) {return(allMaterialPoint.size());}
+		unsigned int 	getCount_GridPoint(void) {return(allGridPoint.size());}
+
+		const MaterialPoint	*getMaterialPoint(unsigned int index) {return(allMaterialPoint[index]);}
+		const GridPoint		*getGridPoint(unsigned int index) {return(allGridPoint[index]);}
+
 		std::vector<MaterialPoint *>	getMaterialPoints(void) {return(allMaterialPoint);}
 		std::vector<GridPoint *>		getGridPoints(void) {return(allGridPoint);}
 		std::vector<GridPoint *>		getGridPoints_Kernel(void) {return(v_GridPoint_Kernel);}
+
 		std::vector<std::array<AGPstruct, 8>> v_MP_AGP;
-
-		unsigned int 	getCount_GridPoint(void) {return(allGridPoint.size());}
-		const GridPoint	*getGridPoint(unsigned int index) {return(allGridPoint[index]);}
-		// --------------------------------------------------------------------
-
-		// function to communicate with outside
+		// function to communicate with outside -------------------------------
 		double getTime_Runtime(void) {return(d_Runtime_Total);}
-		double getTime_Current(void) {return(dTime);}
-		double getTime_End(void) {return(dTimeEnd);}
+		double getTime_Current(void) {return(d_Time);}
+		double getTime_End(void) {return(d_TimeEnd);}
 		double getTime_Increment(void) {return(d_TimeIncrement_Maximum);}
 
 		double d_Offset = 0.0;
@@ -109,20 +93,15 @@ class PhysicsEngine
 
 		std::vector<omp_lock_t *> v_GridPoint_Lock;
 
-		double dTime = 0.0; // current simulation time
-		double d_TimeIncrement_Maximum = 5.0e-8;
-		double dTimeEnd = 10.0;//5.0e-4;
-		int iTimeCycle = 0;
+		double d_Time = 0.0; // current simulation time
+		double d_TimeIncrement_Maximum = 1.0e-3;
+		double d_TimeEnd = 10.0;//5.0e-4;
+		int i_TimeCycle = 0;
 
-		double dTimeConsole_Interval = 500.0*d_TimeIncrement_Maximum;//0.0002*dTimeEnd;
-		double dTimeConsole_Last = -1.0e12; // before creation
-
-		double dTimeLatex_Interval = 10.5*dTimeEnd;
-		double dTimeLatex_LastSave = 1.0e12; // before creation
-		int iTimeLatexCycle = 0;
+		double d_TimeConsole_Interval = 500.0*d_TimeIncrement_Maximum;
+		double d_TimeConsole_Last = -1.0e12; // before creation
 
 		void reportConsole(std::string sDescription = "");
-		void saveLatex(void);
 	private:
 };
 

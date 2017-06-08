@@ -2,8 +2,6 @@
 #define GRIDPOINT_H
 
 #include "Definitions.h"
-////#include ".\include\glm\glm.hpp" // windows
-//#include "./include/glm/glm.hpp" // linux
 
 class GridPoint
 {
@@ -21,7 +19,8 @@ class GridPoint
 		glm::bvec3 b3_Fixed = glm::bvec3(false, false, false);
 		glm::dvec3 d3_Position = glm::dvec3(0.0, 0.0, 0.0);
 
-		glm::dvec3 d3_Mass			= glm::dvec3(0.0,0.0,0.0);
+		double d_Mass = 0.0;
+
 		glm::dvec3 d3_MassGradient	= glm::dvec3(0.0,0.0,0.0);
 		glm::dvec3 d3_Velocity		= glm::dvec3(0.0,0.0,0.0);
 		glm::dvec3 d3_Force			= glm::dvec3(0.0,0.0,0.0);

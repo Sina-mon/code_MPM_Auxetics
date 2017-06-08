@@ -47,7 +47,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 				if(thisGP->b_Active == true)
 				{
 					thisGP->b_Active = false;
-					thisGP->d3_Mass = {0.0, 0.0, 0.0};
+					thisGP->d_Mass = 0.0;
 					thisGP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 					thisGP->d3_Force = glm::dvec3(0.0, 0.0, 0.0);
 					thisGP->d3_Force_Temp = glm::dvec3(0.0, 0.0, 0.0);
@@ -56,7 +56,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					{
 						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
 
-						thisGP_Thread->d3_Mass = {0.0, 0.0, 0.0};
+						thisGP_Thread->d_Mass = 0.0;
 						thisGP_Thread->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 						thisGP_Thread->d3_Force = glm::dvec3(0.0, 0.0, 0.0);
 					}
@@ -124,7 +124,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					{
 						// mass
 //						thisAGP->d3_Mass += dShapeValue * thisMP->d3_Mass;
-						thisAGP_Thread->d3_Mass += dShapeValue * thisMP->d3_Mass;
+						thisAGP_Thread->d_Mass += dShapeValue * thisMP->d_Mass;
 					}
 //					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
 				}
@@ -141,7 +141,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					{
 						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
 
-						thisGP->d3_Mass += thisGP_Thread->d3_Mass;
+						thisGP->d_Mass += thisGP_Thread->d_Mass;
 					}
 				}
 			}
@@ -170,8 +170,8 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 //					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
 					{
 						// velocity
-						if(glm::length(thisAGP->d3_Mass) > d_Mass_Minimum)
-							thisAGP_Thread->d3_Velocity += dShapeValue * (thisMP->d3_Mass * thisMP->d3_Velocity) / thisAGP->d3_Mass;
+						if(thisAGP->d_Mass > d_Mass_Minimum)
+							thisAGP_Thread->d3_Velocity += dShapeValue * (thisMP->d_Mass * thisMP->d3_Velocity) / thisAGP->d_Mass;
 
 						// internal forces
 						double dVolume = thisMP->d_Volume;
@@ -218,8 +218,8 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					if(glm::length(thisGP->d3_Velocity) > 1.0e-9)
 						thisGP->d3_Force -= d_DampingCoefficient * glm::length(thisGP->d3_Force) * glm::normalize(thisGP->d3_Velocity);
 
-					if(glm::length(thisGP->d3_Mass) > d_Mass_Minimum)
-						thisGP->d3_Velocity += thisGP->d3_Force / thisGP->d3_Mass * dTimeIncrement;
+					if(thisGP->d_Mass > d_Mass_Minimum)
+						thisGP->d3_Velocity += thisGP->d3_Force / thisGP->d_Mass * dTimeIncrement;
 
 					if(thisGP->b3_Fixed.x == true)
 					{
@@ -288,8 +288,8 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					glm::dvec3 d3ShapeGradient = v_MP_AGP[index_MP][index_AGP].d3ShapeGradient;
 
 					// velocity
-					if(glm::length(thisAGP->d3_Mass) > d_Mass_Minimum)
-						thisMP->d3_Velocity += dShapeValue * (thisAGP->d3_Force/thisAGP->d3_Mass) * dTimeIncrement;
+					if(glm::length(thisAGP->d_Mass) > d_Mass_Minimum)
+						thisMP->d3_Velocity += dShapeValue * (thisAGP->d3_Force/thisAGP->d_Mass) * dTimeIncrement;
 
 					// position
 					thisMP->d3_Position += dShapeValue * (thisAGP->d3_Velocity) * dTimeIncrement;
@@ -365,7 +365,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 				MaterialPoint *thisMP = v_MarkedMaterialPoints_Displacement_Control[index_MP];
 
 				if(m_TimeLine.v_Time.size() != 0)
-					thisMP->d3_Velocity = m_TimeLine.getVelocity(dTime);
+					thisMP->d3_Velocity = m_TimeLine.getVelocity(d_Time);
 				thisMP->d3_Position += thisMP->d3_Velocity * dTimeIncrement;
 			}
 			a_Runtime[7] += omp_get_wtime() - dRuntime_Block;
@@ -375,27 +375,21 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 //		d_Runtime_Total += double(double(clock()-clockCurrent_Total)/CLOCKS_PER_SEC);
 		d_Runtime_Total += omp_get_wtime() - dRuntime_MP;
 		//report to console ---------------------------------------------------
-		if(dTime - dTimeConsole_Last > dTimeConsole_Interval)
+		if(d_Time - d_TimeConsole_Last > d_TimeConsole_Interval)
 		{
-			dTimeConsole_Last = dTime;
+			d_TimeConsole_Last = d_Time;
 			this->reportConsole();
 		}
-		//save to latex dataset files ---------------------------------------------
-		if(dTime - dTimeLatex_LastSave > dTimeLatex_Interval)
-		{
-			dTimeLatex_LastSave = dTime;
-			this->saveLatex();
-		}
 
-		dTime += dTimeIncrement;
-		iTimeCycle++;
+		d_Time += dTimeIncrement;
+		i_TimeCycle++;
 	}
 
-	if(dTime < dTimeEnd)
+	if(d_Time < d_TimeEnd)
 		return(0);
 	else
 	{
-		dTimeConsole_Last = dTime;
+		d_TimeConsole_Last = d_Time;
 		this->reportConsole();
 		std::cout << "Analysis complete ..." << std::endl;
 		return(1);

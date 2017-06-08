@@ -40,14 +40,14 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 
 	for(unsigned int index = 0; index < allGridPoint.size(); index++)
 	{// calculate debug values
-		dMass += allGridPoint[index]->d3_Mass.x;
+		dMass += allGridPoint[index]->d_Mass;
 //		dMass_Negative += allGridPoint[index]->d3_Mass_Negative.x;
 	}
 
 	for(unsigned int index_MP = 0; index_MP < v_MarkedMaterialPoints_Momentum.size(); index_MP++)
 	{// calculate debug values
-		dMomentum_x += v_MarkedMaterialPoints_Momentum[index_MP]->d3_Velocity.x * v_MarkedMaterialPoints_Momentum[index_MP]->d3_Mass.x;
-		dMomentum_y += v_MarkedMaterialPoints_Momentum[index_MP]->d3_Velocity.y * v_MarkedMaterialPoints_Momentum[index_MP]->d3_Mass.y;
+		dMomentum_x += v_MarkedMaterialPoints_Momentum[index_MP]->d3_Velocity.x * v_MarkedMaterialPoints_Momentum[index_MP]->d_Mass;
+		dMomentum_y += v_MarkedMaterialPoints_Momentum[index_MP]->d3_Velocity.y * v_MarkedMaterialPoints_Momentum[index_MP]->d_Mass;
 	}
 
 	glm::dvec3 d3Stress = glm::dvec3(0.0,0.0,0.0);
@@ -75,15 +75,12 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 	{
 		MaterialPoint *thisMP = allMaterialPoint[index];
 
-		dKineticEnergy += thisMP->d3_Mass.x * glm::pow(glm::length(thisMP->d3_Velocity),2.0);
+		dKineticEnergy += thisMP->d_Mass * glm::pow(glm::length(thisMP->d3_Velocity),2.0);
 	}
 
 	std::string strConsole = "";
 	strConsole += sDescription;
-	if(iTimeCycle == 0)
-	{
-	}
-	strConsole += "\ttime: " + Script(dTime,6);
+	strConsole += "\ttime: " + Script(d_Time,6);
 	strConsole += "\tRuntime: " + Script(d_Runtime_Total,3);
 //	strConsole += "\tMass_P: " + Script(dMass,6);
 //	strConsole += "\tMass_N: " + Script(dMass_Negative,6);
@@ -123,15 +120,6 @@ void PhysicsEngine::reportConsole(std::string sDescription)
 	OutputFile.close();
 }
 // ----------------------------------------------------------------------------
-void PhysicsEngine::saveLatex(void)
-{
-	MaterialPoint_Factory	MP_Factory;
-	GridPoint_Factory		GP_Factory;
-
-	GP_Factory.saveLatex(allGridPoint, ".\\Latex\\", "_" + Script(iTimeLatexCycle));
-	MP_Factory.saveLatex(allMaterialPoint, ".\\Latex\\", "_" + Script(iTimeLatexCycle));
-	iTimeLatexCycle++;
-}
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------

@@ -9,7 +9,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 	// grid points ------------------------------------------------------------
 	{// initialize GP mediator
 		d3_Length_Grid = glm::dvec3(0.06, 0.03, 0.002);
-		i3_Cells = 4*glm::ivec3(60, 30, 1);
+		i3_Cells = 2*glm::ivec3(60, 30, 1);
 
 		d3_Length_Cell = d3_Length_Grid / glm::dvec3(i3_Cells);
 
@@ -80,7 +80,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		omp_init_lock(v_GridPoint_Lock[index]);
 	}
 
-	d_Offset = 1.0/4.0*d3_Length_Cell.x;
+	d_Offset = 1.0/2.0*d3_Length_Cell.x;
 
 	double dThickness = 2.0*d_Offset;
 	glm::dvec3 d3Dimensions_Cell = glm::dvec3(0.050346,0.02,dThickness);
@@ -113,7 +113,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 			double dMass = 2700.0 * thisMP->d_Volume;
 			d_Mass_Minimum = 0.001 * dMass;
-			thisMP->d3_Mass = glm::dvec3(dMass, dMass, dMass);
+			thisMP->d_Mass = dMass;
 
 			thisMP->d_ElasticModulus = 70.0e9;
 			thisMP->d_Viscosity = 0.0;
@@ -126,7 +126,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 			thisMP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 //			thisMP->d3_Momentum = thisMP->d3_Mass * thisMP->d3_Velocity;
-			thisMP->d3_Force_External = thisMP->d3_Mass * glm::dvec3(0.0, 0.0, 0.0);
+			thisMP->d3_Force_External = thisMP->d_Mass * glm::dvec3(0.0, 0.0, 0.0);
 		}
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// send to MP vectors
@@ -158,7 +158,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 			thisMP->d_Volume = thisMP->d_Volume_Initial;
 
 			double dMass = 7800.0 * thisMP->d_Volume;
-			thisMP->d3_Mass = glm::dvec3(dMass, dMass, dMass);
+			thisMP->d_Mass = dMass;
 
 			thisMP->d_ElasticModulus = 210.0e9;
 			thisMP->d_Viscosity = 0.0;
@@ -167,7 +167,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 			thisMP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 //			thisMP->d3_Momentum = thisMP->d3_Mass * thisMP->d3_Velocity;
-			thisMP->d3_Force_External = thisMP->d3_Mass * glm::dvec3(0.0, 0.0, 0.0);
+			thisMP->d3_Force_External = thisMP->d_Mass * glm::dvec3(0.0, 0.0, 0.0);
 		}
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// send to MP vectors
@@ -204,7 +204,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 			thisMP->d_Volume = thisMP->d_Volume_Initial;
 
 			double dMass = 7800.0 * thisMP->d_Volume;
-			thisMP->d3_Mass = glm::dvec3(dMass, dMass, dMass);
+			thisMP->d_Mass = dMass;
 
 			thisMP->d_ElasticModulus = 210.0e9;
 			thisMP->d_Viscosity = 0.0;
@@ -213,7 +213,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 
 			thisMP->d3_Velocity = glm::dvec3(0.0, 0.0, 0.0);
 //			thisMP->d3_Momentum = thisMP->d3_Mass * thisMP->d3_Velocity;
-			thisMP->d3_Force_External = thisMP->d3_Mass * glm::dvec3(0.0, 0.0, 0.0);
+			thisMP->d3_Force_External = thisMP->d_Mass * glm::dvec3(0.0, 0.0, 0.0);
 		}
 		for(unsigned int index_MP = 0; index_MP < thisMaterialDomain.size(); index_MP++)
 		{// send to MP vectors
@@ -254,20 +254,18 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 //		m_TimeLine.addTimePoint(1.0e6,          glm::dvec3(0.0, 0.0, 0.0));
 	}
 
-	glm::dvec3 d3Mass_Domain = {0.0, 0.0, 0.0};
+	double dMass_Domain = 0.0;
 	for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
 	{// calculate debug values
-		d3Mass_Domain += allMaterialPoint[index_MP]->d3_Mass;
+		dMass_Domain += allMaterialPoint[index_MP]->d_Mass;
 	}
 
 	a_Runtime.fill(0.0);
-//	d_Mass_Minimum = 1.0e-9;
 	d_DampingCoefficient = 0.001;
 
-	dTimeEnd = 0.02;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
-//	dTimeEnd = 1.0e-4;
+	d_TimeEnd = 0.02;//-0.005 / (m_TimeLine.getVelocity(1.0).y);
 	d_TimeIncrement_Maximum = 1.0e-9;
-	dTimeConsole_Interval = 1.0e-5;
+	d_TimeConsole_Interval = 1.0e-5;
 
 	std::string sDescription = "";
 	{
@@ -288,7 +286,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 		sDescription += "Number of threads: " + Script(_MAX_N_THREADS) + "\n";
 		sDescription += "Time increment: " + Script(d_TimeIncrement_Maximum, 6) + "\n";
 		sDescription += "Material Point count: " + Script(allMaterialPoint.size()) + "\n";
-		sDescription += "Mass: " + Script(d3Mass_Domain.x,6) + "\n";
+		sDescription += "Mass: " + Script(dMass_Domain,6) + "\n";
 		sDescription += "-------------------------------------------------------------\n";
 		sDescription += "Grid Resolution: (" + Script(i3_Cells.x) + "," + Script(i3_Cells.y) + "," + Script(i3_Cells.z) + ")\n";
 		sDescription += "Kernel Resolution: (" + Script(i3_Cells_Kernel.x) + "," + Script(i3_Cells_Kernel.y) + "," + Script(i3_Cells_Kernel.z) + ")\n";
@@ -304,7 +302,7 @@ void PhysicsEngine::initializeWorld_AuxeticPolygonCell(void)
 //		sDescription += "Elastic-Perfectly plastic\n";
 	}
 
-	dTimeConsole_Last = 0.0;
+	d_TimeConsole_Last = 0.0;
 	this->reportConsole(sDescription);
 }
 // ----------------------------------------------------------------------------

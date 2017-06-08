@@ -77,9 +77,7 @@ class GridPoint_Factory
 			if(thisGridPoint == NULL)
 			{// to get the header column names
 				Stream << "ID" << "\t";
-				Stream << "mass_x" << "\t\t\t";
-				Stream << "mass_y" << "\t\t\t";
-				Stream << "mass_z" << "\t\t\t";
+				Stream << "mass" << "\t\t\t";
 				Stream << "fixed_x" << "\t";
 				Stream << "fixed_y" << "\t";
 				Stream << "fixed_z" << "\t";
@@ -91,10 +89,7 @@ class GridPoint_Factory
 			else
 			{
 				Stream << Script(0) << "\t";
-//				Stream << Script(thisGridPoint->dMass, 8) << "\t";
-				Stream << Script(thisGridPoint->d3_Mass[0], 8) << "\t";
-				Stream << Script(thisGridPoint->d3_Mass[1], 8) << "\t";
-				Stream << Script(thisGridPoint->d3_Mass[2], 8) << "\t";
+				Stream << Script(thisGridPoint->d_Mass, 8) << "\t";
 				Stream << Script(thisGridPoint->b3_Fixed[0]) << "\t";
 				Stream << Script(thisGridPoint->b3_Fixed[1]) << "\t";
 				Stream << Script(thisGridPoint->b3_Fixed[2]) << "\t";

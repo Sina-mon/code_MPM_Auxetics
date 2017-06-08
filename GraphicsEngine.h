@@ -37,7 +37,7 @@ class GraphicsEngine
 		void initializeSystems(void);
 		void setPhysicsEngineReference(PhysicsEngine *mpmPhysicsEngine);
 		void drawGame(void);
-		void Run(void);
+		void runVisualization(PhysicsEngine *pPhysicsEngine);
 		void saveScreenshot(int x, int y, int w, int h, const char * filename);
 	protected:
 		//snapshot save
@@ -63,10 +63,8 @@ class GraphicsEngine
 		GLSLProgram gl_ShadowProgram;
 		GLSLProgram gl_FinalProgram;
 
-		Texture *gl_Texture_01;
-		Texture *gl_Texture_02;
-
-//		Transformation *gl_Transformation;
+//		Texture *gl_Texture_01;
+		Texture *gl_Diffuse_Texture;
 
 		Camera *gl_Camera;
 
@@ -78,8 +76,8 @@ class GraphicsEngine
 
 		enum class enum_Canvas : int {
 			MAIN = 0,
-			COUNT,
 			J2,
+			COUNT,
 		};
 
 		Texture	*v_Canvas_Texture[(int)enum_Canvas::COUNT];
@@ -107,7 +105,7 @@ class GraphicsEngine
 //		unsigned int n_Particles = 0;
 //		std::vector<DEM_Particle *> v_DEMParticles;
 
-		void initShaders(void);
+		void initializeShaders(void);
 		void gameLoop(void);
 		void processInput(void);
 	private:

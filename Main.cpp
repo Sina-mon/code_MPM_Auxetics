@@ -21,10 +21,8 @@ int main (int argc, char ** argv)
 
 	// graphics engine initialization -----------------------------------------
 	GraphicsEngine theGraphicsEngine;
-	theGraphicsEngine.initializeSystems();
-	theGraphicsEngine.setPhysicsEngineReference(&thePhysicsEngine);
 
-	theGraphicsEngine.Run();
+	theGraphicsEngine.runVisualization(&thePhysicsEngine);
 
 	return(0);
 }

@@ -28,7 +28,7 @@ class MaterialPoint
 		unsigned int i_ID = 0;
 		unsigned int i_MaterialType = _ELASTIC;
 
-		glm::dvec3 d3_Mass = {0.0, 0.0, 0.0};
+		double d_Mass = 0.0;
 		double d_Volume = 0.0;
 		double d_Volume_Initial = 0.0;
 
