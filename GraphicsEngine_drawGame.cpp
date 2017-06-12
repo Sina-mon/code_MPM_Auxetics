@@ -68,7 +68,7 @@ void GraphicsEngine::drawGame(void)
 			MaterialPoint *thisMP = vMaterialPoint[index_MP];
 
 			// particle position
-			float fSize = 0.4*glm::pow(thisMP->d_Volume, 1.0/3.0);
+			float fSize = 2.0*0.4*glm::pow(thisMP->d_Volume, 1.0/3.0);
 			// particle color
 			glm::vec4 f4objectColor = _RED;
 			if(thisMP->b_Mark_Stress)
@@ -125,8 +125,8 @@ void GraphicsEngine::drawGame(void)
 	}
 
 	if(true)
-	{// MP parameteric value, e.g. mass, velocity, plastic strain
-		v_Canvas_Texture[(int)enum_Canvas::J2]->bindRenderTarget();
+	{// MP parameteric value, von-Mises stress
+		v_Canvas_Texture[(int)enum_Canvas::J2_STRESS]->bindRenderTarget();
 		gl_BasicProgram.use();
 
 		glClearDepth(1.0);
@@ -173,9 +173,83 @@ void GraphicsEngine::drawGame(void)
 			MaterialPoint *thisMP = vMaterialPoint[index_MP];
 
 			// particle position
-			float fSize = 0.0001;
+			float fSize = 2.0*0.4*glm::pow(thisMP->d_Volume, 1.0/3.0);
 			// particle color
 			CR.calculateState_J2(thisMP->d6_Stress);
+			float fJ2 = CR.d_J2;
+			glm::vec4 f4objectColor = (1.0f-fJ2/fJ2_Maximum) * _BLUE + fJ2/fJ2_Maximum * _RED;
+			glUniform4fv(objectColorLocation, 1, &f4objectColor[0]);
+
+			// shadow
+			glm::mat4 m4LightTransformation = gl_Light->getViewProjection();
+			glUniformMatrix4fv(transformationShadowLocation, 1, GL_FALSE, &m4LightTransformation[0][0]); // 1 for sending only 1 matrix, GL_FALSE because we don;t want transposition
+			// camera and model transformation matices
+			Transformation glTransformation(thisMP->d3_Position, glm::vec3(0.0, 0.0, 0.0), glm::vec3(fSize));
+			glm::mat4 m4TransformationMatrix_Camera = gl_Camera->getViewProjection();
+			glm::mat4 m4TransformationMatrix_Model = glTransformation.GetModelMatrix();
+			glUniformMatrix4fv(transformationCameraLocation, 1, GL_FALSE, &m4TransformationMatrix_Camera[0][0]); // 1 for sending only 1 matrix, GL_FALSE because we don;t want transposition
+			glUniformMatrix4fv(transformationModelLocation, 1, GL_FALSE, &m4TransformationMatrix_Model[0][0]); // 1 for sending only 1 matrix, GL_FALSE because we don;t want transposition
+
+			gl_Particle_Mesh->Draw();
+		}
+
+		gl_BasicProgram.unuse();
+	}
+
+	if(true)
+	{// MP parameteric value, equivalent plastic strain
+		v_Canvas_Texture[(int)enum_Canvas::J2_PLASTICSTRAIN]->bindRenderTarget();
+		gl_BasicProgram.use();
+
+		glClearDepth(1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// diffuse
+		GLuint gl_UniformLocation_Diffuse = gl_BasicProgram.getUniformLocation("diffuseTexture");
+		glUniform1i(gl_UniformLocation_Diffuse, 0); // save unit 0 for this texture
+		gl_Diffuse_Texture->bindTextureUnit(0);
+		// shadow
+		GLuint gl_UniformLocation_Shadow = gl_BasicProgram.getUniformLocation("shadowTexture");
+		glUniform1i(gl_UniformLocation_Shadow, 1); // save unit 0 for this texture
+		gl_Shadow_Texture->bindTextureUnit(1);
+
+		GLuint objectColorLocation = gl_BasicProgram.getUniformLocation("objectColor");
+		GLuint transformationModelLocation = gl_BasicProgram.getUniformLocation("transformationModelMatrix");
+		GLuint transformationCameraLocation = gl_BasicProgram.getUniformLocation("transformationCameraMatrix");
+		GLuint transformationShadowLocation = gl_BasicProgram.getUniformLocation("transformationShadowMatrix");
+		GLuint lightDirectionLocation = gl_BasicProgram.getUniformLocation("lightDirection");
+		GLuint lightColorLocation = gl_BasicProgram.getUniformLocation("lightColor");
+
+		glm::vec3 f3LightDirection = gl_Light->getDirection();
+		glm::vec4 f4LightColor = gl_Light->f4_Color;
+		glUniform3fv(lightDirectionLocation, 1, &f3LightDirection[0]);
+		glUniform4fv(lightColorLocation, 1, &f4LightColor[0]);
+
+		std::vector<MaterialPoint *> vMaterialPoint = mpm_PhysicsEngine->getMaterialPoints();
+
+		// material points ----------------------------------------------------
+		ConstitutiveRelation CR;
+//		float fJ2_Maximum = 1.0e-12;
+//		for(int index_MP = 0; index_MP < vMaterialPoint.size(); index_MP++)
+//		{
+//			MaterialPoint *thisMP = vMaterialPoint[index_MP];
+//
+//			CR.calculateState_J2(thisMP->d6_Strain_Plastic);
+//			float fJ2 = CR.d_J2;
+//
+//			if(fJ2 > fJ2_Maximum)
+//				fJ2_Maximum = fJ2;
+//		}
+
+		float fJ2_Maximum = vMaterialPoint[0]->d_YieldStress / vMaterialPoint[0]->d_ElasticModulus;
+
+		for(int index_MP = 0; index_MP < vMaterialPoint.size(); index_MP++)
+		{
+			MaterialPoint *thisMP = vMaterialPoint[index_MP];
+
+			// particle position
+			float fSize = 2.0*0.4*glm::pow(thisMP->d_Volume, 1.0/3.0);
+			// particle color
+			CR.calculateState_J2(thisMP->d6_Strain_Plastic);
 			float fJ2 = CR.d_J2;
 			glm::vec4 f4objectColor = (1.0f-fJ2/fJ2_Maximum) * _BLUE + fJ2/fJ2_Maximum * _RED;
 			glUniform4fv(objectColorLocation, 1, &f4objectColor[0]);
@@ -666,15 +740,25 @@ void GraphicsEngine::drawGame(void)
 			//draw
 			gl_Canvas_Mesh->Draw();
 		}
-		if((int)enum_Canvas::COUNT > 1)
+		if((int)enum_Canvas::J2_STRESS < (int)enum_Canvas::COUNT)
 		{// top-left quadrant of screen
 			// bind texture
-			v_Canvas_Texture[(int)enum_Canvas::J2]->bindTextureUnit(0);
+			v_Canvas_Texture[(int)enum_Canvas::J2_STRESS]->bindTextureUnit(0);
 			// set viewport
-			float x_Location = (float)enum_Canvas::J2 / (int)enum_Canvas::COUNT;
+			float x_Location = (float)enum_Canvas::J2_STRESS / (int)enum_Canvas::COUNT;
 			glViewport(x_Location*i_ScreenWidth, 0.0*i_ScreenHeight, fScreenRatio*i_ScreenWidth, 1.0*i_ScreenHeight);
 			//draw
-			v_Canvas_Mesh[(int)enum_Canvas::J2]->Draw();
+			v_Canvas_Mesh[(int)enum_Canvas::J2_STRESS]->Draw();
+		}
+		if((int)enum_Canvas::J2_PLASTICSTRAIN < (int)enum_Canvas::COUNT)
+		{// top-left quadrant of screen
+			// bind texture
+			v_Canvas_Texture[(int)enum_Canvas::J2_PLASTICSTRAIN]->bindTextureUnit(0);
+			// set viewport
+			float x_Location = (float)enum_Canvas::J2_PLASTICSTRAIN / (int)enum_Canvas::COUNT;
+			glViewport(x_Location*i_ScreenWidth, 0.0*i_ScreenHeight, fScreenRatio*i_ScreenWidth, 1.0*i_ScreenHeight);
+			//draw
+			v_Canvas_Mesh[(int)enum_Canvas::J2_PLASTICSTRAIN]->Draw();
 		}
 		if(false)
 		{// top-right quadrant of screen

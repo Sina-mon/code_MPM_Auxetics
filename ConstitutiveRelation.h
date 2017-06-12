@@ -29,7 +29,7 @@ class ConstitutiveRelation
 		void calculateIncrement_VonMisesHardening_6D(double dE, double dNu, double dYield, double dBackstress_Isotropic, double dHardening_Isotropic_C0, double dHardening_Isotropic_C1, double d6StressCurrent[6], double d6StrainIncrement[6]);
 		void calculateIncrement_IdealGass(double dHeatCapacityRatio, double dSpecificHeat, double dShearViscosity, double dBulkViscosity, double d6Stress_Current[6], double dDensity, double dTemperature, double d6Strain_Rate[6]);
 
-		void calculateState_J2(double d6Stress[6]);
+		void calculateState_J2(double d6State[6]);
 	protected:
 
 	private:

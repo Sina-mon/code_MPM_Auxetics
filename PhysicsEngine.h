@@ -12,7 +12,6 @@
 ////#include ".\include\glm\glm.hpp" // windows
 //#include "./include/glm/glm.hpp"//sina, glm is a column major implementation
 
-#include "Bases.h"
 #include "GridPoint.h"
 #include "GridPoint_Factory.h"
 #include "GridPoint_Mediator.h"
@@ -21,7 +20,7 @@
 #include "ConstitutiveRelation.h"
 #include "TimeLine.h"
 
-#define _MAX_N_THREADS 2
+#define _MAX_N_THREADS 1
 
 // adjacent grid point struct to calculate AGP data once
 struct AGPstruct
@@ -48,10 +47,6 @@ class PhysicsEngine
 		std::vector<std::array<AGPstruct, 8>> v_MP_AGP;
 
 		double d_Offset = 0.0;
-//		glm::dvec3 d3_Length_Grid = glm::dvec3(0.0, 0.0, 0.0);
-//		glm::dvec3 d3_Length_Cell = glm::dvec3(0.0, 0.0, 0.0);
-//		glm::ivec3 i3_Cells = glm::ivec3(0.0, 0.0, 0.0);
-//		glm::ivec3 i3_Nodes = glm::ivec3(0.0, 0.0, 0.0);
 
 		glm::dvec3 d3_Length_Grid_Kernel = glm::dvec3(0.0, 0.0, 0.0);
 		glm::dvec3 d3_Length_Cell_Kernel = glm::dvec3(0.0, 0.0, 0.0);

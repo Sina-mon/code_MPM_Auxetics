@@ -76,7 +76,8 @@ class GraphicsEngine
 
 		enum class enum_Canvas : int {
 			MAIN = 0,
-			J2,
+			J2_STRESS,
+			J2_PLASTICSTRAIN,
 			COUNT,
 		};
 
