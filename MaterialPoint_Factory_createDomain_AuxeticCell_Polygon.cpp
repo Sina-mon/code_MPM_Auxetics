@@ -1,9 +1,9 @@
 #include "MaterialPoint_Factory.h"
 
 // ----------------------------------------------------------------------------
-std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_AuxeticCell_Polygon(glm::dvec3 d3Center, glm::dvec3 d3Dimension, double dDent, double dThickness, double dOffset)
+std::vector<MaterialPoint *> MaterialPoint_Factory::createDomain_AuxeticCell_Polygon(glm::dvec3 d3Center, glm::dvec3 d3Dimension, double dDent, double dThickness, double dOffset)
 {
-	std::vector<MaterialPoint_Kinetics *> allMaterialPoint;
+	std::vector<MaterialPoint *> allMaterialPoint;
 
 	double dLength_Incline = glm::sqrt(glm::pow(0.5*d3Dimension.x - 2.0*dDent, 2.0) + glm::pow(0.5*d3Dimension.y, 2.0));
 	double dAngle_Sine = 0.5*d3Dimension.y / dLength_Incline;
@@ -70,7 +70,7 @@ std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_Auxeti
 		{
 			for(double dz = 0.5*dOffset; dz <= 0.5*d3Dimension.z; dz += dOffset)
 			{
-				MaterialPoint_Kinetics *thisMaterialPoint;
+				MaterialPoint *thisMaterialPoint;
 
 				glm::dvec3 d3Coordinate = glm::dvec3(dx, dy, dz);
 

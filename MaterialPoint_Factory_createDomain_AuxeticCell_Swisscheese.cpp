@@ -1,9 +1,9 @@
 #include "MaterialPoint_Factory.h"
 
 // ----------------------------------------------------------------------------
-std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_AuxeticCell_Swisscheese(glm::dvec3 d3Center, glm::dvec3 d3Dimension, glm::dvec2 d2Spacing, glm::dvec2 d2Radii, double dOffset)
+std::vector<MaterialPoint *> MaterialPoint_Factory::createDomain_AuxeticCell_Swisscheese(glm::dvec3 d3Center, glm::dvec3 d3Dimension, glm::dvec2 d2Spacing, glm::dvec2 d2Radii, double dOffset)
 {
-	std::vector<MaterialPoint_Kinetics *> allMaterialPoint;
+	std::vector<MaterialPoint *> allMaterialPoint;
 
 	// create a quarter of the cell -----------------------
 	std::vector<glm::dvec3> vVertex_Total;
@@ -50,7 +50,7 @@ std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_Auxeti
 		{
 			for(double dz = dz_Start; dz <= 0.5*d3Dimension.z; dz += dOffset)
 			{
-				MaterialPoint_Kinetics *thisMaterialPoint;
+				MaterialPoint *thisMaterialPoint;
 
 				glm::dvec3 d3Coordinate = glm::dvec3(dx, dy, dz);
 

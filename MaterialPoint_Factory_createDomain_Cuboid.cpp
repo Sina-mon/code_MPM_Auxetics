@@ -1,9 +1,9 @@
 #include "MaterialPoint_Factory.h"
 
 // ----------------------------------------------------------------------------
-std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_Cuboid(glm::dvec3 d3Center, glm::dvec3 d3Dimension, double dOffset)
+std::vector<MaterialPoint *> MaterialPoint_Factory::createDomain_Cuboid(glm::dvec3 d3Center, glm::dvec3 d3Dimension, double dOffset)
 {
-	std::vector<MaterialPoint_Kinetics *> allMaterialPoint;
+	std::vector<MaterialPoint *> allMaterialPoint;
 
 	// if the z-dimension is set to zero, create only one layer of material points
 	// otherwise create even number of layers that are symmetric relative to the x-y plane
@@ -21,7 +21,7 @@ std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_Cuboid
 		{
 			for(double dz = dz_Start; dz <= 0.5*d3Dimension.z; dz += dOffset)
 			{
-				MaterialPoint_Kinetics *thisMaterialPoint;
+				MaterialPoint *thisMaterialPoint;
 
 				thisMaterialPoint = createMaterialPoint(d3Center + glm::dvec3(+dx, +dy, +dz), dOffset);
 				allMaterialPoint.push_back(thisMaterialPoint);

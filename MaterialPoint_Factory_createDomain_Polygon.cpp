@@ -1,9 +1,9 @@
 #include "MaterialPoint_Factory.h"
 
 // ----------------------------------------------------------------------------
-std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_Polygon(std::vector<glm::dvec3> vVertex, double dOffset)
+std::vector<MaterialPoint *> MaterialPoint_Factory::createDomain_Polygon(std::vector<glm::dvec3> vVertex, double dOffset)
 {
-	std::vector<MaterialPoint_Kinetics *> allMaterialPoint;
+	std::vector<MaterialPoint *> allMaterialPoint;
 
 	glm::dvec3 d3Coordinates_Min = vVertex[0];
 	glm::dvec3 d3Coordinates_Max = vVertex[0];
@@ -37,7 +37,7 @@ std::vector<MaterialPoint_Kinetics *> MaterialPoint_Factory::createDomain_Polygo
 		{
 			for(double dz = d3Coordinates_Min.z; dz <= d3Coordinates_Max.z; dz += dOffset)
 			{
-				MaterialPoint_Kinetics *thisMaterialPoint;
+				MaterialPoint *thisMaterialPoint;
 
 //						double dz = vVertex[0].z;
 				glm::dvec3 d3Coordinate = glm::dvec3(dx, dy, dz);
