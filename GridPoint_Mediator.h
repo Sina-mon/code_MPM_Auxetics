@@ -8,7 +8,6 @@
 #include "Definitions.h"
 #include "GridPoint.h"
 #include "GridPoint_Factory.h"
-#include "Bases.h"
 
 class GridPoint_Mediator
 {

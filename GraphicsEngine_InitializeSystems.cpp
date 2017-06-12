@@ -35,7 +35,7 @@ void GraphicsEngine::initializeSystems(void)
 //	glClearColor(0.0f, 0.05f, 0.10f, 1.0f);// only needs to be set once
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);// only needs to be set once
 
-	this->initShaders();
+	this->initializeShaders();
 
 	gl_Shadow_Texture	= new Texture(2048, 2048);
 
@@ -66,8 +66,8 @@ void GraphicsEngine::initializeSystems(void)
 	gl_Light = new Light(glm::vec3(0.0,0.0,0.0), glm::vec3(0.0,0.0,-0.025));
 	gl_Light->f4_Color = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	gl_Texture_01 = new Texture("./res/bricks.jpg");
-	gl_Texture_02 = new Texture("./res/Sand_01.jpg");
+//	gl_Texture_01 = new Texture("./res/bricks.jpg");
+	gl_Diffuse_Texture = new Texture("./res/Sand_01.jpg");
 	gl_Particle_Mesh = new Mesh("./res/sphere.obj");
 }
 // ----------------------------------------------------------------------------
