@@ -20,7 +20,6 @@ class GridPoint_Factory
 			int index = i_x + i_y*(n_x) + i_z*(n_x*n_y);//   i_x + i_y * n_x;
 			return(index);
 		}
-
 		static int getIndex(glm::ivec3 i3Node_Index, glm::ivec3 i3Node_Count)
 		{
 			int index = i3Node_Index.x + i3Node_Index.y*(i3Node_Count.x) + i3Node_Index.z*(i3Node_Count.x*i3Node_Count.y);
@@ -31,7 +30,6 @@ class GridPoint_Factory
 			else
 				return(-1);
 		}
-
 		std::vector<GridPoint *> createGrid(glm::dvec3 d3Length, glm::ivec3 i3Cells)
 		{
 			int nNodes[3] = {0, 0, 0};
@@ -68,7 +66,6 @@ class GridPoint_Factory
 
 			return(allGridPoint);
 		}
-
 		std::string getScript(GridPoint *thisGridPoint)
 		{
 			std::stringstream Stream;
@@ -100,21 +97,6 @@ class GridPoint_Factory
 			}
 
 			return (Stream.str ());
-		}
-
-		void saveLatex(std::vector<GridPoint *> allGridPoint, std::string strPrefix, std::string strPostfix)
-		{
-			std::string strFileName = strPrefix + "GridPoint" + strPostfix + ".txt";
-			std::ofstream OutputFile(strFileName.c_str(), std::ios_base::out);
-
-			OutputFile << GridPoint_Factory::getScript(NULL);
-
-			for(unsigned int index = 0; index < allGridPoint.size(); index+=1)
-			{
-				OutputFile << GridPoint_Factory::getScript(allGridPoint[index]);
-			}
-
-			OutputFile.close();
 		}
 	protected:
 

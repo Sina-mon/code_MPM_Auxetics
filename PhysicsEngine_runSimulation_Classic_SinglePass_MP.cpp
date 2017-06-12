@@ -30,11 +30,10 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 		dRuntime_MP = omp_get_wtime();
 		#pragma omp parallel
 		{
-			GridPoint_Mediator	GP_Mediator_Thread;
-			Bases BasesFunction_Thread;
+//			Bases BasesFunction_Thread;
 
-			int nThreads = omp_get_num_threads();
-			int	iThread = omp_get_thread_num();
+			int iThread_Count = omp_get_num_threads();
+			int	iThread_This = omp_get_thread_num();
 
 			#pragma omp barrier
 			dRuntime_Block = omp_get_wtime();
@@ -52,7 +51,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					thisGP->d3_Force = glm::dvec3(0.0, 0.0, 0.0);
 					thisGP->d3_Force_Temp = glm::dvec3(0.0, 0.0, 0.0);
 
-					for(int index_Thread = 0; index_Thread < nThreads; index_Thread++)
+					for(int index_Thread = 0; index_Thread < iThread_Count; index_Thread++)
 					{
 						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
 
@@ -71,25 +70,26 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			// find adjacent grid points for every material point ------------- find adjacent grid points
 			// and the corresponding bases values -----------------------------
 			#pragma omp for
-			for(unsigned int index_MP = 0; index_MP < v_MaterialPoint_Kinetics.size(); index_MP++)
+			for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
 			{
-				MaterialPoint_Kinetics *thisMP = v_MaterialPoint_Kinetics[index_MP];
+				MaterialPoint *thisMP = allMaterialPoint[index_MP];
 
-				GP_Mediator_Thread.findAdjacentGridPoints(thisMP->d3_Position, i3_Nodes, d3_Length_Cell);
+				mpm_GP_Mediator_Thread[iThread_This].findAdjacentGridPoints(thisMP->d3_Position);
 
-				for(int index_AGP = 0; index_AGP < GP_Mediator_Thread.v_adjacentGridPoints.size(); index_AGP++)
+				for(int index_AGP = 0; index_AGP < mpm_GP_Mediator_Thread[iThread_This].v_adjacentGridPoints.size(); index_AGP++)
 				{
-					GridPoint *thisAGP = allGridPoint[GP_Mediator_Thread.v_adjacentGridPoints[index_AGP]];
+					GridPoint *thisAGP = allGridPoint[mpm_GP_Mediator_Thread[iThread_This].v_adjacentGridPoints[index_AGP]];
 					thisAGP->b_Active = true;
 
 					// adjacent grid points
-					v_MP_AGP[index_MP][index_AGP].index = GP_Mediator_Thread.v_adjacentGridPoints[index_AGP];
+					v_MP_AGP[index_MP][index_AGP].index = mpm_GP_Mediator_Thread[iThread_This].v_adjacentGridPoints[index_AGP];
 
 					// shape value and shape gradient value
-					BasesFunction_Thread.calculateBases(thisMP->d3_Position, thisAGP->d3_Position, d3_Length_Cell);
+					mpm_GP_Mediator_Thread[iThread_This].calculateBases(thisMP->d3_Position, thisAGP->d3_Position);
+//					BasesFunction_Thread.calculateBases(thisMP->d3_Position, thisAGP->d3_Position, mpm_GP_Mediator_Thread[iThread_This].d3_Length_Cell);
 
-					v_MP_AGP[index_MP][index_AGP].dShapeValue = BasesFunction_Thread.d_ShapeValue;
-					v_MP_AGP[index_MP][index_AGP].d3ShapeGradient = BasesFunction_Thread.d3_ShapeGradient;
+					v_MP_AGP[index_MP][index_AGP].dShapeValue = mpm_GP_Mediator_Thread[iThread_This].d_ShapeValue;
+					v_MP_AGP[index_MP][index_AGP].d3ShapeGradient = mpm_GP_Mediator_Thread[iThread_This].d3_ShapeGradient;
 				}
 			}
 			a_Runtime[1] += omp_get_wtime() - dRuntime_Block;
@@ -104,9 +104,9 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			dRuntime_Block = omp_get_wtime();
 			// material point to grid, only mass ------------------------------ MP to GP (mass)
 			#pragma omp for
-			for(unsigned int index_MP = 0; index_MP < v_MaterialPoint_Kinetics.size(); index_MP++)
+			for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
 			{
-				MaterialPoint_Kinetics *thisMP = v_MaterialPoint_Kinetics[index_MP];
+				MaterialPoint *thisMP = allMaterialPoint[index_MP];
 
 				if(thisMP->b_DisplacementControl == true)
 					continue;
@@ -114,8 +114,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 				for(unsigned int index_AGP = 0; index_AGP < v_MP_AGP[index_MP].size(); index_AGP++)
 				{
 					unsigned int index_GP = v_MP_AGP[index_MP][index_AGP].index;
-//					GridPoint *thisAGP = allGridPoint[index_GP];
-					GridPoint *thisAGP_Thread = allGridPoint_Thread[iThread][index_GP];
+					GridPoint *thisAGP_Thread = allGridPoint_Thread[iThread_This][index_GP];
 
 					double dShapeValue = v_MP_AGP[index_MP][index_AGP].dShapeValue;
 					glm::dvec3 d3ShapeGradient = v_MP_AGP[index_MP][index_AGP].d3ShapeGradient;
@@ -123,7 +122,6 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 //					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
 					{
 						// mass
-//						thisAGP->d3_Mass += dShapeValue * thisMP->d3_Mass;
 						thisAGP_Thread->d_Mass += dShapeValue * thisMP->d_Mass;
 					}
 //					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
@@ -137,7 +135,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 				GridPoint *thisGP = allGridPoint[index_GP];
 				if(thisGP->b_Active == true)
 				{
-					for(int index_Thread = 0; index_Thread < nThreads; index_Thread++)
+					for(int index_Thread = 0; index_Thread < iThread_Count; index_Thread++)
 					{
 						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
 
@@ -151,19 +149,18 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			dRuntime_Block = omp_get_wtime();
 			// material point to grid, velocity and force---------------------- MP to GP (velocity and force)
 			#pragma omp for
-			for(unsigned int index_MP = 0; index_MP < v_MaterialPoint_Kinetics.size(); index_MP++)
+			for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
 			{
-				MaterialPoint_Kinetics *thisMP_Kinetics = v_MaterialPoint_Kinetics[index_MP];
-				MaterialPoint_Material *thisMP_Material = v_MaterialPoint_Material[index_MP];
+				MaterialPoint *thisMP = allMaterialPoint[index_MP];
 
-				if(thisMP_Kinetics->b_DisplacementControl == true)
+				if(thisMP->b_DisplacementControl == true)
 					continue;
 
 				for(unsigned int index_AGP = 0; index_AGP < v_MP_AGP[index_MP].size(); index_AGP++)
 				{
 					unsigned int index_GP = v_MP_AGP[index_MP][index_AGP].index;
 					GridPoint *thisAGP = allGridPoint[index_GP];
-					GridPoint *thisAGP_Thread = allGridPoint_Thread[iThread][index_GP];
+					GridPoint *thisAGP_Thread = allGridPoint_Thread[iThread_This][index_GP];
 
 					double dShapeValue = v_MP_AGP[index_MP][index_AGP].dShapeValue;
 					glm::dvec3 d3ShapeGradient = v_MP_AGP[index_MP][index_AGP].d3ShapeGradient;
@@ -172,16 +169,16 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					{
 						// velocity
 						if(thisAGP->d_Mass > d_Mass_Minimum)
-							thisAGP_Thread->d3_Velocity += dShapeValue * (thisMP_Kinetics->d_Mass * thisMP_Kinetics->d3_Velocity) / thisAGP->d_Mass;
+							thisAGP_Thread->d3_Velocity += dShapeValue * (thisMP->d_Mass * thisMP->d3_Velocity) / thisAGP->d_Mass;
 
 						// internal forces
-						double dVolume = thisMP_Material->d_Volume;
-						thisAGP_Thread->d3_Force.x += -dVolume * (d3ShapeGradient.x*thisMP_Material->d6_Stress[0] + d3ShapeGradient.y*thisMP_Material->d6_Stress[3] + d3ShapeGradient.z*thisMP_Material->d6_Stress[5]);
-						thisAGP_Thread->d3_Force.y += -dVolume * (d3ShapeGradient.y*thisMP_Material->d6_Stress[1] + d3ShapeGradient.x*thisMP_Material->d6_Stress[3] + d3ShapeGradient.z*thisMP_Material->d6_Stress[4]);
-						thisAGP_Thread->d3_Force.z += -dVolume * (d3ShapeGradient.z*thisMP_Material->d6_Stress[2] + d3ShapeGradient.x*thisMP_Material->d6_Stress[5] + d3ShapeGradient.y*thisMP_Material->d6_Stress[4]);
+						double dVolume = thisMP->d_Volume;
+						thisAGP_Thread->d3_Force.x += -dVolume * (d3ShapeGradient.x*thisMP->d6_Stress[0] + d3ShapeGradient.y*thisMP->d6_Stress[3] + d3ShapeGradient.z*thisMP->d6_Stress[5]);
+						thisAGP_Thread->d3_Force.y += -dVolume * (d3ShapeGradient.y*thisMP->d6_Stress[1] + d3ShapeGradient.x*thisMP->d6_Stress[3] + d3ShapeGradient.z*thisMP->d6_Stress[4]);
+						thisAGP_Thread->d3_Force.z += -dVolume * (d3ShapeGradient.z*thisMP->d6_Stress[2] + d3ShapeGradient.x*thisMP->d6_Stress[5] + d3ShapeGradient.y*thisMP->d6_Stress[4]);
 
 						// external forces
-						thisAGP_Thread->d3_Force += dShapeValue*thisMP_Kinetics->d3_Force_External;
+						thisAGP_Thread->d3_Force += dShapeValue*thisMP->d3_Force_External;
 					}
 //					if(nThreads > 1)	omp_unset_lock(v_GridPoint_Lock[index_GP]);
 				}
@@ -194,7 +191,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 				GridPoint *thisGP = allGridPoint[index_GP];
 				if(thisGP->b_Active == true)
 				{
-					for(int index_Thread = 0; index_Thread < nThreads; index_Thread++)
+					for(int index_Thread = 0; index_Thread < iThread_Count; index_Thread++)
 					{
 						GridPoint *thisGP_Thread = allGridPoint_Thread[index_Thread][index_GP];
 
@@ -248,13 +245,13 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			#pragma omp for
 			for(unsigned int index_MP = 0; index_MP < v_MarkedMaterialPoints_Displacement_Control.size(); index_MP++)
 			{
-				MaterialPoint_Kinetics *thisMP = v_MarkedMaterialPoints_Displacement_Control[index_MP];
+				MaterialPoint *thisMP = v_MarkedMaterialPoints_Displacement_Control[index_MP];
 
-				GP_Mediator_Thread.findNeighborGridPoints(thisMP->d3_Position, i3_Nodes, d3_Length_Cell, 0);
+				mpm_GP_Mediator_Thread[iThread_This].findAdjacentGridPoints(thisMP->d3_Position);
 
-				for(int index_AGP = 0; index_AGP < GP_Mediator_Thread.v_adjacentGridPoints.size(); index_AGP++)
+				for(int index_AGP = 0; index_AGP < mpm_GP_Mediator_Thread[iThread_This].v_adjacentGridPoints.size(); index_AGP++)
 				{
-					unsigned int index_GP = GP_Mediator_Thread.v_adjacentGridPoints[index_AGP];
+					unsigned int index_GP = mpm_GP_Mediator_Thread[iThread_This].v_adjacentGridPoints[index_AGP];
 					GridPoint *thisAGP = allGridPoint[index_GP];
 
 //					if(nThreads > 1)	omp_set_lock(v_GridPoint_Lock[index_GP]);
@@ -272,12 +269,11 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			dRuntime_Block = omp_get_wtime();
 			// grid to material ----------------------------------------------- GP to MP
 			#pragma omp for
-			for(unsigned int index_MP = 0; index_MP < v_MaterialPoint_Kinetics.size(); index_MP++)
+			for(unsigned int index_MP = 0; index_MP < allMaterialPoint.size(); index_MP++)
 			{
-				MaterialPoint_Kinetics *thisMP_Kinetics = v_MaterialPoint_Kinetics[index_MP];
-				MaterialPoint_Material *thisMP_Material = v_MaterialPoint_Material[index_MP];
+				MaterialPoint *thisMP = allMaterialPoint[index_MP];
 
-				if(thisMP_Kinetics->b_DisplacementControl == true)
+				if(thisMP->b_DisplacementControl == true)
 					continue;
 
 				glm::dmat3 d33VelocityGradient = glm::dmat3(0.0);
@@ -291,19 +287,19 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 
 					// velocity
 					if(glm::length(thisAGP->d_Mass) > d_Mass_Minimum)
-						thisMP_Kinetics->d3_Velocity += dShapeValue * (thisAGP->d3_Force/thisAGP->d_Mass) * dTimeIncrement;
+						thisMP->d3_Velocity += dShapeValue * (thisAGP->d3_Force/thisAGP->d_Mass) * dTimeIncrement;
 
 					// position
-					thisMP_Kinetics->d3_Position += dShapeValue * (thisAGP->d3_Velocity) * dTimeIncrement;
+					thisMP->d3_Position += dShapeValue * (thisAGP->d3_Velocity) * dTimeIncrement;
 
 					// velocity gradient, to be used to calculate strains
 					d33VelocityGradient += glm::outerProduct(thisAGP->d3_Velocity, d3ShapeGradient);// this glm function does the pre-transposition that we want
 				}
 
-				thisMP_Material->d33_DeformationGradient += (d33VelocityGradient * thisMP_Material->d33_DeformationGradient) * dTimeIncrement;
+				thisMP->d33_DeformationGradient += (d33VelocityGradient * thisMP->d33_DeformationGradient) * dTimeIncrement;
 
-				double dDet = glm::determinant(thisMP_Material->d33_DeformationGradient);
-				thisMP_Material->d_Volume = dDet * thisMP_Material->d_Volume_Initial;
+				double dDet = glm::determinant(thisMP->d33_DeformationGradient);
+				thisMP->d_Volume = dDet * thisMP->d_Volume_Initial;
 
 				glm::dmat3 d33DeformationGradientIncrement = glm::dmat3(1.0) + d33VelocityGradient * dTimeIncrement;
 
@@ -320,27 +316,27 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					d6StrainRate[index] = d6StrainIncrement[index] / dTimeIncrement;
 
 				for(int index = 0; index < 6; index++)
-					thisMP_Material->d6_Strain[index] += d6StrainIncrement[index];
+					thisMP->d6_Strain[index] += d6StrainIncrement[index];
 
 				// elastic
-				double dE = thisMP_Material->d_ElasticModulus;
+				double dE = thisMP->d_ElasticModulus;
 				// plastic
-				double dNu = thisMP_Material->d_PoissonRatio;
-				double dYield = thisMP_Material->d_YieldStress;
+				double dNu = thisMP->d_PoissonRatio;
+				double dYield = thisMP->d_YieldStress;
 
 				double d6StressIncrement[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 				double d6PlasticStrainIncrement[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 				ConstitutiveRelation vonMises_Thread;
 
-				if(thisMP_Material->i_MaterialType == _ELASTIC)
+				if(thisMP->i_MaterialType == _ELASTIC)
 					vonMises_Thread.calculateIncrement_Elastic(dE, dNu, d6StrainIncrement);
-				else if(thisMP_Material->i_MaterialType == _PLASTIC)
-					vonMises_Thread.calculateIncrement_PerfectlyPlastic_6D(dE, dNu, dYield, thisMP_Material->d6_Stress, d6StrainIncrement);
-				else if(thisMP_Material->i_MaterialType == _VONMISESHARDENING)
-					vonMises_Thread.calculateIncrement_VonMisesHardening_6D(dE, dNu, dYield, thisMP_Material->d_BackStress_Isotropic, thisMP_Material->d_Hardening_Isotropic_C0, thisMP_Material->d_Hardening_Isotropic_C1, thisMP_Material->d6_Stress, d6StrainIncrement);
+				else if(thisMP->i_MaterialType == _PLASTIC)
+					vonMises_Thread.calculateIncrement_PerfectlyPlastic_6D(dE, dNu, dYield, thisMP->d6_Stress, d6StrainIncrement);
+				else if(thisMP->i_MaterialType == _VONMISESHARDENING)
+					vonMises_Thread.calculateIncrement_VonMisesHardening_6D(dE, dNu, dYield, thisMP->d_BackStress_Isotropic, thisMP->d_Hardening_Isotropic_C0, thisMP->d_Hardening_Isotropic_C1, thisMP->d6_Stress, d6StrainIncrement);
 				else
-					vonMises_Thread.calculateIncrement_PerfectlyPlastic_6D(dE, dNu, dYield, thisMP_Material->d6_Stress, d6StrainIncrement);
+					vonMises_Thread.calculateIncrement_PerfectlyPlastic_6D(dE, dNu, dYield, thisMP->d6_Stress, d6StrainIncrement);
 
 				for(int index = 0; index < 6; index++)
 					d6StressIncrement[index] = vonMises_Thread.d6StressIncrement[index];
@@ -349,12 +345,12 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 					d6PlasticStrainIncrement[index] = vonMises_Thread.d6PlasticStrainIncrement[index];
 
 				for(int index = 0; index < 6; index++)
-					thisMP_Material->d6_Stress[index] += d6StressIncrement[index];
+					thisMP->d6_Stress[index] += d6StressIncrement[index];
 
 				for(int index = 0; index < 6; index++)
-					thisMP_Material->d6_Strain_Plastic[index] += d6PlasticStrainIncrement[index];
+					thisMP->d6_Strain_Plastic[index] += d6PlasticStrainIncrement[index];
 
-				thisMP_Material->d_BackStress_Isotropic += vonMises_Thread.dBackstress_IsotropicIncrement;
+				thisMP->d_BackStress_Isotropic += vonMises_Thread.dBackstress_IsotropicIncrement;
 			}
 			a_Runtime[6] += omp_get_wtime() - dRuntime_Block;
 
@@ -364,7 +360,7 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 			#pragma omp for
 			for(unsigned int index_MP = 0; index_MP < v_MarkedMaterialPoints_Displacement_Control.size(); index_MP++)
 			{
-				MaterialPoint_Kinetics *thisMP = v_MarkedMaterialPoints_Displacement_Control[index_MP];
+				MaterialPoint *thisMP = v_MarkedMaterialPoints_Displacement_Control[index_MP];
 
 				if(m_TimeLine.v_Time.size() != 0)
 					thisMP->d3_Velocity = m_TimeLine.getVelocity(d_Time);
@@ -374,7 +370,6 @@ int PhysicsEngine::runSimulation_Classic_SinglePass_MP(double dTimeIncrement_Tot
 
 		}
 
-//		d_Runtime_Total += double(double(clock()-clockCurrent_Total)/CLOCKS_PER_SEC);
 		d_Runtime_Total += omp_get_wtime() - dRuntime_MP;
 		//report to console ---------------------------------------------------
 		if(d_Time - d_TimeConsole_Last > d_TimeConsole_Interval)
